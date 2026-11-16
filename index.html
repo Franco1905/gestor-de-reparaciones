@@ -156,6 +156,10 @@
         class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
         <i class="fa-solid fa-boxes-packing w-5 text-center"></i> Repuestos / Compras
       </button>
+      <button onclick="switchTab('distribuidoras')" id="nav-distribuidoras"
+        class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+        <i class="fa-solid fa-truck-ramp-box w-5 text-center"></i> Distribuidoras
+      </button>
     </nav>
 
     <div class="p-4 border-t border-slate-800 bg-slate-950/50 flex flex-col gap-3">
@@ -199,6 +203,11 @@
       class="mnav-btn flex flex-col items-center p-1 text-[10px] font-medium">
       <i class="fa-solid fa-boxes-packing text-base mb-0.5"></i>
       <span>Repuestos</span>
+    </button>
+    <button onclick="switchTab('distribuidoras')" id="mnav-distribuidoras"
+      class="mnav-btn flex flex-col items-center p-1 text-[10px] font-medium">
+      <i class="fa-solid fa-truck-ramp-box text-base mb-0.5"></i>
+      <span>Distribuidores</span>
     </button>
   </div>
 
@@ -409,6 +418,23 @@
                 <input type="email" id="cli_email" placeholder="cliente@correo.com"
                   class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
               </div>
+
+              <!-- REGISTRO DE ORDEN HISTÓRICA (YA ENTREGADA) -->
+              <div class="bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200/90 space-y-2.5">
+                <label class="flex items-center gap-2.5 cursor-pointer">
+                  <input type="checkbox" id="checkin_is_historical" onchange="handleHistoricalToggle(this.checked)"
+                    class="w-4 h-4 rounded text-amber-600 focus:ring-amber-500">
+                  <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                    <i class="fa-solid fa-clock-rotate-left text-amber-600"></i> Registrar como orden histórica (Ya entregada)
+                  </span>
+                </label>
+                <div id="historical_date_container" class="hidden pl-6 space-y-1">
+                  <label class="block text-xs font-semibold text-slate-700">Fecha en que se realizó el trabajo <span class="text-red-500">*</span></label>
+                  <input type="date" id="historical_date"
+                    class="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-medium focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                  <p class="text-[11px] text-slate-500">Se registrará automáticamente con estado <strong>Entregado</strong> y saldo <strong>$0</strong> en la fecha elegida, sin alterar la caja del día de hoy.</p>
+                </div>
+              </div>
             </div>
 
             <!-- BLOQUE 2: DISPOSITIVO Y BLOQUEO INTERACTIVO -->
@@ -420,16 +446,22 @@
 
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Marca <span
-                      class="text-red-500">*</span></label>
-                  <input type="text" id="dev_marca" required placeholder="Samsung, Apple, Motorola..."
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Marca <span class="text-red-500">*</span></label>
+                  <select id="dev_marca_select" onchange="handleBrandSelectChange(this.value)"
                     class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <!-- Populated dynamically -->
+                  </select>
+                  <input type="text" id="dev_marca_custom" placeholder="Escribe la nueva marca..."
+                    class="hidden mt-2 w-full bg-white border border-indigo-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Modelo <span
-                      class="text-red-500">*</span></label>
-                  <input type="text" id="dev_modelo" required placeholder="Galaxy S21, iPhone 12..."
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Modelo Exacto <span class="text-red-500">*</span></label>
+                  <select id="dev_modelo_select" onchange="handleModelSelectChange(this.value)"
                     class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <!-- Populated dynamically -->
+                  </select>
+                  <input type="text" id="dev_modelo_custom" placeholder="Escribe el nuevo modelo..."
+                    class="hidden mt-2 w-full bg-white border border-indigo-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-slate-700 mb-1">IMEI / Nº Serie</label>
@@ -513,11 +545,11 @@
               </div>
             </div>
 
-            <!-- BLOQUE 3: REPUESTOS, CÁLCULO AUTOMÁTICO DE PRECIO Y SEÑA -->
+            <!-- BLOQUE 3: REPUESTOS, CÁLCULO DE PRECIO Y SEÑA -->
             <div class="space-y-4">
               <div class="flex items-center justify-between border-b border-indigo-50 pb-2">
                 <div class="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider">
-                  <i class="fa-solid fa-calculator"></i> 3. Repuestos & Cálculo Automático de Precio
+                  <i class="fa-solid fa-calculator"></i> 3. Repuestos & Precios del Servicio
                 </div>
                 <button type="button" onclick="addCheckinRepuestoRow()"
                   class="px-3 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold text-xs rounded-lg flex items-center gap-1">
@@ -525,45 +557,64 @@
                 </button>
               </div>
 
-              <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 space-y-3">
-                <p class="text-xs text-indigo-900 font-medium">
-                  <i class="fa-solid fa-circle-info mr-1"></i> Regla de cálculo: El <strong>Monto Total</strong> se
-                  calcula como <strong>Suma Repuestos × 2</strong>, y la <strong>Seña</strong> sugerida es la
-                  <strong>Mitad del Total</strong> (igual al costo de los repuestos).
-                </p>
+              <div id="checkin-repuestos-container" class="space-y-2">
+                <!-- Dynamic rows -->
+              </div>
 
-                <div id="checkin-repuestos-container" class="space-y-2">
-                  <!-- Dynamic rows -->
+              <!-- CONFIGURACIÓN DE FÓRMULA / CÁLCULO AUTOMÁTICO -->
+              <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-indigo-100 pb-3">
+                  <label class="flex items-center gap-2.5 cursor-pointer">
+                    <input type="checkbox" id="toggle-auto-pricing" onchange="handleAutoPricingToggle(this.checked)" checked
+                      class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500">
+                    <span class="text-xs font-bold text-slate-800">Activar cálculo automático de precio</span>
+                  </label>
+                  <div id="pricing-formula-controls" class="flex flex-wrap items-center gap-2 text-xs">
+                    <span class="text-slate-500 font-medium">Repuestos ×</span>
+                    <input type="number" step="0.1" min="1" id="pricing-multiplier" value="2.0" oninput="recalculateCheckinTotals()"
+                      class="w-16 bg-white border border-slate-300 rounded-lg px-2 py-1 text-center font-bold text-xs">
+                    <span class="text-slate-500 font-medium">+ Mano obra $</span>
+                    <input type="number" step="100" min="0" id="pricing-fixed-labor" value="0" oninput="recalculateCheckinTotals()"
+                      class="w-20 bg-white border border-slate-300 rounded-lg px-2 py-1 text-center font-bold text-xs">
+                    <button type="button" onclick="saveDefaultPricingFormula()" title="Guardar como fórmula por defecto en Google Drive"
+                      class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-semibold transition-all flex items-center gap-1 shadow-sm">
+                      <i class="fa-solid fa-floppy-disk"></i> Guardar fórmula predeterminada
+                    </button>
+                  </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-indigo-100 text-center">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
                   <div class="bg-white p-3 rounded-xl border border-indigo-200">
                     <span class="text-[10px] font-bold text-slate-400 block uppercase">Costo Repuestos</span>
                     <span id="calc-costo-repuestos" class="text-base font-extrabold text-slate-800">$0.00</span>
                   </div>
                   <div class="bg-white p-3 rounded-xl border border-indigo-200">
-                    <span class="text-[10px] font-bold text-slate-400 block uppercase">Monto Total a Cobrar</span>
+                    <span class="text-[10px] font-bold text-slate-400 block uppercase">Total Sugerido</span>
                     <span id="calc-monto-total" class="text-lg font-extrabold text-indigo-600">$0.00</span>
                   </div>
                   <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
-                    <span class="text-[10px] font-bold text-emerald-800 block uppercase">Seña Automática (50%)</span>
+                    <span class="text-[10px] font-bold text-emerald-800 block uppercase">Seña Sugerida (50%)</span>
                     <span id="calc-sena-auto" class="text-lg font-extrabold text-emerald-700">$0.00</span>
                   </div>
                 </div>
               </div>
 
-              <!-- GARANTÍA DÍAS PERSONALIZABLE -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <!-- PRECIO TOTAL, SEÑA Y GARANTÍA -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Días de Garantía (Personalizable) <span
-                      class="text-red-500">*</span></label>
-                  <input type="number" id="garantia_dias_input" min="0" value="30" required
-                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Precio Total a Cobrar ($) <span class="text-red-500">*</span></label>
+                  <input type="number" step="0.01" min="0" id="cost_total_order" required
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-bold text-indigo-700 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-slate-700 mb-1">Seña Recibida al Ingresar ($)</label>
                   <input type="number" step="0.01" min="0" id="cost_sena_real" value="0"
                     class="w-full bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold rounded-xl px-3 py-2.5 text-sm focus:outline-none">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Días de Garantía (Personalizable) <span class="text-red-500">*</span></label>
+                  <input type="number" id="garantia_dias_input" min="0" value="30" required
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
               </div>
             </div>
@@ -694,6 +745,51 @@
                 </tr>
               </thead>
               <tbody id="repuestos-table-body" class="divide-y divide-slate-100 text-slate-700">
+                <!-- JS populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 6: DISTRIBUIDORAS ================= -->
+      <section id="tab-distribuidoras" class="tab-content hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-truck-ramp-box text-indigo-600"></i> Agenda de Distribuidoras y Proveedores
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Contactos de casas de repuestos, importadores y distribuidores de confianza.</p>
+          </div>
+          <button onclick="openNewSupplierModal()"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-1.5 transition-all">
+            <i class="fa-solid fa-plus"></i> Nueva Distribuidora
+          </button>
+        </div>
+
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex justify-between items-center">
+          <div class="relative w-full sm:w-80">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+            <input type="text" id="search-suppliers" placeholder="Buscar distribuidora por nombre o notas..."
+              oninput="renderSuppliersTable()"
+              class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-50 text-slate-500 text-xs font-semibold border-b border-slate-200">
+                <tr>
+                  <th class="p-4">Distribuidora</th>
+                  <th class="p-4">Teléfono / WhatsApp</th>
+                  <th class="p-4">Dirección / Localidad</th>
+                  <th class="p-4">Notas / Especialidad</th>
+                  <th class="p-4 text-center">Repuestos Asociados</th>
+                  <th class="p-4 text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="suppliers-table-body" class="divide-y divide-slate-100 text-slate-700">
                 <!-- JS populated -->
               </tbody>
             </table>
@@ -835,25 +931,30 @@
           </div>
         </div>
 
-        <!-- WHATSAPP & COMPROBANTES PDF -->
-        <div class="space-y-2">
-          <span class="text-xs font-semibold text-slate-600 block">Acciones de Envíos y Comprobantes:</span>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <button onclick="openWhatsAppRawModal()"
-              class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
-              <i class="fa-brands fa-whatsapp text-sm"></i> Enviar WhatsApp (Datos Pelados)
+        <!-- COMPROBANTES PDF & NOTIFICACIONES -->
+        <div class="space-y-3 pt-2 border-t border-slate-100">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <span class="text-xs font-bold text-slate-700">Comprobantes Oficiales en PDF y Notificaciones:</span>
+            <label class="flex items-center gap-2 cursor-pointer text-xs text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+              <input type="checkbox" id="pdf_include_signatures" checked class="w-3.5 h-3.5 rounded text-indigo-600 focus:ring-indigo-500">
+              <span class="font-medium">Incluir apartado de firmas en Ticket</span>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <button onclick="downloadTicketIngresoPDF()"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold p-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-indigo-600/20 transition-all">
+              <i class="fa-solid fa-file-pdf text-sm"></i> Descargar Ticket de Ingreso (PDF)
             </button>
-            <button onclick="downloadPDF('ingreso')"
-              class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2 border border-indigo-200">
-              <i class="fa-solid fa-file-pdf"></i> Ticket de Ingreso (PDF)
+
+            <button onclick="downloadGarantiaPDF()"
+              class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold p-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-purple-600/20 transition-all">
+              <i class="fa-solid fa-shield-cat text-sm"></i> Certificado de Garantía (PDF)
             </button>
-            <button onclick="downloadPDF('presupuesto')"
-              class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2 border border-indigo-200">
-              <i class="fa-solid fa-calculator"></i> Presupuesto (PDF)
-            </button>
-            <button onclick="downloadPDF('garantia')"
-              class="w-full bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2 border border-purple-200">
-              <i class="fa-solid fa-shield-cat"></i> Entrega y Garantía (PDF)
+
+            <button onclick="openWhatsAppStatusModal()"
+              class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold p-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all">
+              <i class="fa-brands fa-whatsapp text-sm"></i> Notificar Estado por WhatsApp
             </button>
           </div>
         </div>
@@ -908,33 +1009,81 @@
     </div>
   </div>
 
-  <!-- ================= MODAL: PREVIEW WHATSAPP DATOS PELADOS ================= -->
-  <div id="modal-wa-raw"
+  <!-- ================= MODAL: NOTIFICACIÓN DE ESTADO POR WHATSAPP ================= -->
+  <div id="modal-wa-status"
     class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 space-y-4">
       <div class="flex justify-between items-center border-b border-slate-100 pb-3">
         <h4 class="font-bold text-slate-800 flex items-center gap-2">
-          <i class="fa-brands fa-whatsapp text-emerald-600"></i> Vista Previa Mensaje (Datos Pelados)
+          <i class="fa-brands fa-whatsapp text-emerald-600 text-lg"></i> Notificación de Estado al Cliente
         </h4>
-        <button onclick="closeModal('modal-wa-raw')" class="text-slate-400 hover:text-slate-600">
+        <button onclick="closeModal('modal-wa-status')" class="text-slate-400 hover:text-slate-600">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
       <div class="space-y-2">
-        <p class="text-xs text-slate-500">Este es el mensaje crudo listo para ser enviado:</p>
-        <pre id="wa-raw-preview-text"
-          class="bg-slate-900 text-emerald-400 p-4 rounded-xl text-xs font-mono whitespace-pre-wrap leading-relaxed shadow-inner border border-slate-800"></pre>
+        <p class="text-xs text-slate-500">Mensaje prellenado para enviar directamente al WhatsApp del cliente:</p>
+        <textarea id="wa-status-text" rows="9"
+          class="w-full bg-slate-900 text-emerald-400 p-4 rounded-xl text-xs font-mono whitespace-pre-wrap leading-relaxed shadow-inner border border-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"></textarea>
       </div>
 
       <div class="pt-2 flex justify-end gap-2">
-        <button type="button" onclick="closeModal('modal-wa-raw')"
-          class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium">Cerrar</button>
-        <button type="button" onclick="sendWhatsAppRawNow()"
+        <button type="button" onclick="closeModal('modal-wa-status')"
+          class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium">Cancelar</button>
+        <button type="button" onclick="sendWhatsAppStatusNow()"
           class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md flex items-center gap-1.5">
-          <i class="fa-brands fa-whatsapp text-sm"></i> Enviar por WhatsApp
+          <i class="fa-brands fa-whatsapp text-sm"></i> Abrir en WhatsApp
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: REGISTRAR / EDITAR DISTRIBUIDORA ================= -->
+  <div id="modal-supplier"
+    class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <h4 id="modal-supplier-title" class="font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-truck-ramp-box text-indigo-600"></i> Nueva Distribuidora
+        </h4>
+        <button onclick="closeModal('modal-supplier')" class="text-slate-400 hover:text-slate-600">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleSaveSupplier(event)" class="space-y-4 text-sm">
+        <input type="hidden" id="sup_id" value="">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre de la Distribuidora <span class="text-red-500">*</span></label>
+          <input type="text" id="sup_nombre" required placeholder="Ej. FixParts Argentina"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Teléfono / WhatsApp</label>
+          <input type="text" id="sup_telefono" placeholder="Ej. +54 9 11 1234-5678"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Dirección / Localidad</label>
+          <input type="text" id="sup_direccion" placeholder="Ej. Av. Corrientes 1234, CABA"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Notas / Especialidad</label>
+          <textarea id="sup_notas" rows="2" placeholder="Ej. Módulos OLED originales, baterías, envíos al interior"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeModal('modal-supplier')"
+            class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium">Cancelar</button>
+          <button type="submit"
+            class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md">
+            Guardar Distribuidora
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1025,9 +1174,13 @@
               class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Proveedor</label>
-            <input type="text" id="rep_proveedor" placeholder="Ej. FixParts"
-              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Distribuidora / Proveedor</label>
+            <select id="rep_proveedor_select" onchange="handleRepuestoModalSupplierChange(this.value)"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-indigo-500">
+              <!-- Populated dynamically -->
+            </select>
+            <input type="text" id="rep_proveedor_custom" placeholder="Escribe el nombre del proveedor..."
+              class="hidden mt-1.5 w-full bg-white border border-indigo-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-indigo-500">
           </div>
         </div>
         <div>
@@ -1097,11 +1250,14 @@
     let hasPendingSave = false;
     let currentSyncStatus = 'synced'; // 'synced' | 'saving' | 'error'
 
-    // App State (100% Preserved)
+    // App State (100% Preserved with Backward-Compatible Extensions)
     window.state = {
       shop: {nombre: 'Mi Taller', cuit: '', telefono: '', direccion: ''},
       clients: [],
       orders: [],
+      suppliers: [],
+      customCatalog: {},
+      pricingFormula: {multiplier: 2.0, fixedLabor: 0, senaPercent: 50, autoEnabled: true},
       currentTab: 'dashboard',
       selectedOrderId: null,
       checkinRepuestosRows: [],
@@ -1109,7 +1265,25 @@
       tempRepuestoTicket: null,
       patternCanvasNodes: [],
       selectedPatternPath: [],
-      isDrawingPattern: false
+      isDrawingPattern: false,
+      editingSupplierId: null
+    };
+
+    // ================= CATÁLOGO DE MARCAS Y MODELOS EN ARGENTINA =================
+    const DEFAULT_BRAND_CATALOG = {
+      'Samsung': ['Galaxy A03', 'Galaxy A04', 'Galaxy A13', 'Galaxy A14', 'Galaxy A23', 'Galaxy A24', 'Galaxy A32', 'Galaxy A33', 'Galaxy A34', 'Galaxy A52', 'Galaxy A53', 'Galaxy A54', 'Galaxy A55', 'Galaxy S20 FE', 'Galaxy S21', 'Galaxy S21 FE', 'Galaxy S22', 'Galaxy S23', 'Galaxy S24', 'Galaxy Note 20', 'Galaxy Z Flip 4', 'Galaxy Z Fold 4'],
+      'Apple': ['iPhone 7', 'iPhone 8', 'iPhone X', 'iPhone XR', 'iPhone XS', 'iPhone 11', 'iPhone 11 Pro', 'iPhone 12', 'iPhone 12 Pro', 'iPhone 13', 'iPhone 13 Pro', 'iPhone 14', 'iPhone 14 Pro', 'iPhone 15', 'iPhone 15 Pro'],
+      'Motorola': ['Moto E13', 'Moto E20', 'Moto E22', 'Moto E32', 'Moto G13', 'Moto G14', 'Moto G22', 'Moto G23', 'Moto G31', 'Moto G32', 'Moto G41', 'Moto G42', 'Moto G52', 'Moto G53', 'Moto G72', 'Moto G82', 'Moto G84', 'Edge 30', 'Edge 40'],
+      'Xiaomi': ['11T', '11T Pro', '12', '12 Pro', '12 Lite', '13', '13 Pro', '13 Lite', '13T', '14'],
+      'Redmi': ['Redmi 9A', 'Redmi 9C', 'Redmi 10', 'Redmi 10C', 'Redmi 12', 'Redmi 12C', 'Redmi 13C', 'Note 10', 'Note 10 Pro', 'Note 11', 'Note 11 Pro', 'Note 12', 'Note 12 Pro', 'Note 13', 'Note 13 Pro'],
+      'POCO': ['POCO X3 Pro', 'POCO X3 NFC', 'POCO X4 Pro', 'POCO X5', 'POCO X5 Pro', 'POCO X6', 'POCO X6 Pro', 'POCO F3', 'POCO F4', 'POCO F5', 'POCO M3', 'POCO M4', 'POCO M5'],
+      'TCL': ['TCL 20E', 'TCL 20Y', 'TCL 30E', 'TCL 305', 'TCL 306', 'TCL 40 SE', 'TCL 408', 'TCL 403'],
+      'ZTE': ['Blade A31', 'Blade A33 Plus', 'Blade A51', 'Blade A52', 'Blade A71', 'Blade A72', 'Blade V30', 'Blade V40'],
+      'Huawei': ['Y6', 'Y7', 'Y9', 'P20 Lite', 'P30 Lite', 'P40 Lite', 'Nova 9', 'Nova Y70'],
+      'LG': ['K40s', 'K41s', 'K50s', 'K51s', 'K61', 'K22', 'Velvet', 'G8 ThinQ'],
+      'Realme': ['C11', 'C21', 'C33', 'C35', 'C53', 'C55', '7 Pro', '8 Pro', '9 Pro', '11 Pro'],
+      'Infinix': ['Hot 10', 'Hot 11', 'Hot 12', 'Hot 20', 'Hot 30', 'Hot 40 Pro', 'Note 12', 'Note 30'],
+      'Tecno': ['Spark 8C', 'Spark 10', 'Spark 10 Pro', 'Spark 20', 'Camon 19', 'Camon 20', 'Pova 4', 'Pova 5']
     };
 
     // ================= GOOGLE AUTHENTICATION FLOW =================
@@ -1311,6 +1485,9 @@
           window.state.shop = dbData.shop || {nombre: 'Mi Taller', cuit: '', telefono: '', direccion: ''};
           window.state.clients = Array.isArray(dbData.clients) ? dbData.clients : [];
           window.state.orders = Array.isArray(dbData.orders) ? dbData.orders : [];
+          window.state.suppliers = Array.isArray(dbData.suppliers) ? dbData.suppliers : [];
+          window.state.customCatalog = dbData.customCatalog || {};
+          window.state.pricingFormula = dbData.pricingFormula || (dbData.shop && dbData.shop.pricingFormula) || {multiplier: 2.0, fixedLabor: 0, senaPercent: 50, autoEnabled: true};
 
           updateShopUI();
           renderCurrentTab();
@@ -1321,11 +1498,17 @@
           const initialDb = {
             shop: {nombre: 'Mi Taller', cuit: '', telefono: '', direccion: ''},
             clients: [],
-            orders: []
+            orders: [],
+            suppliers: [],
+            customCatalog: {},
+            pricingFormula: {multiplier: 2.0, fixedLabor: 0, senaPercent: 50, autoEnabled: true}
           };
           window.state.shop = initialDb.shop;
           window.state.clients = initialDb.clients;
           window.state.orders = initialDb.orders;
+          window.state.suppliers = initialDb.suppliers;
+          window.state.customCatalog = initialDb.customCatalog;
+          window.state.pricingFormula = initialDb.pricingFormula;
 
           // Creación de archivo inicial mediante FormData nativo (sin boundary manual para evitar error CORS)
           const formData = new FormData();
@@ -1412,6 +1595,9 @@
           shop: window.state.shop || {nombre: 'Mi Taller', cuit: '', telefono: '', direccion: ''},
           clients: window.state.clients || [],
           orders: window.state.orders || [],
+          suppliers: window.state.suppliers || [],
+          customCatalog: window.state.customCatalog || {},
+          pricingFormula: window.state.pricingFormula || {multiplier: 2.0, fixedLabor: 0, senaPercent: 50, autoEnabled: true},
           lastUpdated: new Date().toISOString()
         };
 
@@ -1636,7 +1822,8 @@
         nueva_orden: 'Recepción & Check-in de Dispositivo',
         ordenes: 'Órdenes de Trabajo',
         clientes: 'Directorio de Clientes',
-        repuestos: 'Gestión de Repuestos'
+        repuestos: 'Gestión de Repuestos',
+        distribuidoras: 'Agenda de Distribuidoras y Proveedores'
       };
       document.getElementById('page-title').innerText = titles[tabId] || 'Taller';
 
@@ -1649,6 +1836,7 @@
       if (window.state.currentTab === 'ordenes') renderOrdersTable();
       if (window.state.currentTab === 'clientes') renderClientsTable();
       if (window.state.currentTab === 'repuestos') renderRepuestosTable();
+      if (window.state.currentTab === 'distribuidoras') renderSuppliersTable();
     }
 
     // ================= DASHBOARD =================
@@ -1717,7 +1905,157 @@
       });
     }
 
-    // ================= CHECK-IN FORM & AUTOMATIC CALCULATIONS =================
+    // ================= CATÁLOGO DE MARCAS Y MODELOS LOGIC =================
+    function populateBrandSelect(selectedBrand = '') {
+      const select = document.getElementById('dev_marca_select');
+      if (!select) return;
+
+      const builtInBrands = Object.keys(DEFAULT_BRAND_CATALOG);
+      const customBrands = Object.keys(window.state.customCatalog || {});
+      const allBrands = Array.from(new Set([...builtInBrands, ...customBrands])).sort((a, b) => a.localeCompare(b));
+
+      let html = '<option value="">-- Seleccionar Marca --</option>';
+      allBrands.forEach(b => {
+        html += `<option value="${b}" ${b === selectedBrand ? 'selected' : ''}>${b}</option>`;
+      });
+      html += '<option value="__CUSTOM__">+ Otro / Agregar nuevo...</option>';
+      select.innerHTML = html;
+
+      const customInput = document.getElementById('dev_marca_custom');
+      if (selectedBrand === '__CUSTOM__') {
+        customInput.classList.remove('hidden');
+      } else {
+        customInput.classList.add('hidden');
+        customInput.value = '';
+      }
+
+      populateModelSelect(selectedBrand);
+    }
+
+    window.handleBrandSelectChange = (val) => {
+      const customInput = document.getElementById('dev_marca_custom');
+      if (val === '__CUSTOM__') {
+        customInput.classList.remove('hidden');
+        customInput.focus();
+      } else {
+        customInput.classList.add('hidden');
+        customInput.value = '';
+      }
+      populateModelSelect(val);
+    };
+
+    function populateModelSelect(brand, selectedModel = '') {
+      const select = document.getElementById('dev_modelo_select');
+      if (!select) return;
+
+      let models = [];
+      if (brand && brand !== '__CUSTOM__') {
+        const defaultModels = DEFAULT_BRAND_CATALOG[brand] || [];
+        const customModels = (window.state.customCatalog && window.state.customCatalog[brand]) || [];
+        models = Array.from(new Set([...defaultModels, ...customModels])).sort((a, b) => a.localeCompare(b));
+      }
+
+      let html = '<option value="">-- Seleccionar Modelo --</option>';
+      models.forEach(m => {
+        html += `<option value="${m}" ${m === selectedModel ? 'selected' : ''}>${m}</option>`;
+      });
+      html += '<option value="__CUSTOM__">+ Otro / Agregar nuevo...</option>';
+      select.innerHTML = html;
+
+      const customInput = document.getElementById('dev_modelo_custom');
+      if (selectedModel === '__CUSTOM__') {
+        customInput.classList.remove('hidden');
+      } else {
+        customInput.classList.add('hidden');
+        customInput.value = '';
+      }
+    }
+
+    window.handleModelSelectChange = (val) => {
+      const customInput = document.getElementById('dev_modelo_custom');
+      if (val === '__CUSTOM__') {
+        customInput.classList.remove('hidden');
+        customInput.focus();
+      } else {
+        customInput.classList.add('hidden');
+        customInput.value = '';
+      }
+    };
+
+    // ================= ORDEN HISTÓRICA TOGGLE =================
+    window.handleHistoricalToggle = (checked) => {
+      const container = document.getElementById('historical_date_container');
+      const dateInput = document.getElementById('historical_date');
+      if (container) {
+        if (checked) {
+          container.classList.remove('hidden');
+          if (dateInput && !dateInput.value) {
+            dateInput.value = new Date().toISOString().split('T')[0];
+          }
+        } else {
+          container.classList.add('hidden');
+        }
+      }
+    };
+
+    // ================= CÁLCULO DE PRECIOS Y FÓRMULA CONFIGURABLE =================
+    window.handleAutoPricingToggle = (checked) => {
+      const controls = document.getElementById('pricing-formula-controls');
+      if (controls) {
+        if (checked) {
+          controls.classList.remove('opacity-40', 'pointer-events-none');
+        } else {
+          controls.classList.add('opacity-40', 'pointer-events-none');
+        }
+      }
+      if (window.state.pricingFormula) {
+        window.state.pricingFormula.autoEnabled = checked;
+      }
+      recalculateCheckinTotals();
+    };
+
+    window.saveDefaultPricingFormula = () => {
+      const mult = parseFloat(document.getElementById('pricing-multiplier')?.value) || 2.0;
+      const fixed = parseFloat(document.getElementById('pricing-fixed-labor')?.value) || 0;
+      const isAuto = document.getElementById('toggle-auto-pricing')?.checked ?? true;
+
+      window.state.pricingFormula = {
+        multiplier: mult,
+        fixedLabor: fixed,
+        autoEnabled: isAuto
+      };
+
+      window.syncDatabaseToDrive();
+      window.showToast(`Fórmula predeterminada guardada (Repuestos × ${mult} + $${fixed}).`, 'success');
+    };
+
+    function recalculateCheckinTotals() {
+      const sumCost = window.state.checkinRepuestosRows.reduce((acc, r) => acc + Number(r.costo || 0), 0);
+      const isAuto = document.getElementById('toggle-auto-pricing')?.checked ?? true;
+      const mult = parseFloat(document.getElementById('pricing-multiplier')?.value) || 2.0;
+      const fixed = parseFloat(document.getElementById('pricing-fixed-labor')?.value) || 0;
+
+      const totalCalculado = Math.round((sumCost * mult) + fixed);
+      const autoSena = Math.round(totalCalculado / 2);
+
+      const calcCostoEl = document.getElementById('calc-costo-repuestos');
+      const calcTotalEl = document.getElementById('calc-monto-total');
+      const calcSenaEl = document.getElementById('calc-sena-auto');
+
+      if (calcCostoEl) calcCostoEl.innerText = `$${sumCost.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+      if (calcTotalEl) calcTotalEl.innerText = `$${totalCalculado.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+      if (calcSenaEl) calcSenaEl.innerText = `$${autoSena.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+
+      const totalInput = document.getElementById('cost_total_order');
+      const senaInput = document.getElementById('cost_sena_real');
+
+      if (isAuto) {
+        if (totalInput) totalInput.value = totalCalculado;
+        if (senaInput) senaInput.value = autoSena;
+      }
+    }
+
+    // ================= CHECK-IN FORM SETUP =================
     function setupNewOrderForm() {
       const nextNum = window.state.orders.length > 0
         ? Math.max(...window.state.orders.map(o => parseInt((o.codigo || 'OT-1000').replace('OT-', '')) || 1000)) + 1
@@ -1729,13 +2067,35 @@
       document.getElementById('checkin-photos-preview').innerHTML = '';
       window.clearPatternCanvas();
 
+      // Reset Brand and Model selectors
+      populateBrandSelect();
+
+      // Reset Historical Order Toggle
+      const histCheck = document.getElementById('checkin_is_historical');
+      if (histCheck) histCheck.checked = false;
+      const histContainer = document.getElementById('historical_date_container');
+      if (histContainer) histContainer.classList.add('hidden');
+      const histDate = document.getElementById('historical_date');
+      if (histDate) histDate.value = '';
+
+      // Initialize Pricing Formula values
+      const formula = window.state.pricingFormula || {multiplier: 2.0, fixedLabor: 0, autoEnabled: true};
+      const autoToggle = document.getElementById('toggle-auto-pricing');
+      if (autoToggle) autoToggle.checked = formula.autoEnabled ?? true;
+      const multInput = document.getElementById('pricing-multiplier');
+      if (multInput) multInput.value = formula.multiplier || 2.0;
+      const laborInput = document.getElementById('pricing-fixed-labor');
+      if (laborInput) laborInput.value = formula.fixedLabor || 0;
+
+      window.handleAutoPricingToggle(formula.autoEnabled ?? true);
+
       if (window.state.checkinRepuestosRows.length === 0) {
         addCheckinRepuestoRow();
       }
     }
 
     window.addCheckinRepuestoRow = () => {
-      window.state.checkinRepuestosRows.push({descripcion: '', costo: 0, estado: 'A comprar'});
+      window.state.checkinRepuestosRows.push({descripcion: '', costo: 0, estado: 'A comprar', proveedor: ''});
       renderCheckinRepuestosRows();
     };
 
@@ -1755,21 +2115,35 @@
 
     function renderCheckinRepuestosRows() {
       const container = document.getElementById('checkin-repuestos-container');
+      if (!container) return;
       container.innerHTML = '';
 
       window.state.checkinRepuestosRows.forEach((r, idx) => {
+        let supOptions = `<option value="">Stock propio</option>`;
+        (window.state.suppliers || []).forEach(s => {
+          supOptions += `<option value="${s.nombre}" ${r.proveedor === s.nombre ? 'selected' : ''}>${s.nombre}</option>`;
+        });
+        if (r.proveedor && !['', 'Stock propio'].includes(r.proveedor) && !(window.state.suppliers || []).some(s => s.nombre === r.proveedor)) {
+          supOptions += `<option value="${r.proveedor}" selected>${r.proveedor}</option>`;
+        }
+
         container.innerHTML += `
-          <div class="grid grid-cols-12 gap-2 items-center bg-white p-2 rounded-xl border border-indigo-100 shadow-sm">
-            <div class="col-span-5">
-              <input type="text" placeholder="Ej. Pantalla OLED S21" value="${r.descripcion}" oninput="updateCheckinRepuestoRow(${idx}, 'descripcion', this.value)" class="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 focus:ring-1 focus:ring-indigo-500">
+          <div class="grid grid-cols-12 gap-2 items-center bg-white p-2.5 rounded-xl border border-indigo-100 shadow-sm">
+            <div class="col-span-12 sm:col-span-5">
+              <input type="text" placeholder="Ej. Pantalla OLED S21" value="${r.descripcion || ''}" oninput="updateCheckinRepuestoRow(${idx}, 'descripcion', this.value)" class="w-full text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 focus:ring-1 focus:ring-indigo-500">
             </div>
-            <div class="col-span-3">
+            <div class="col-span-4 sm:col-span-2">
               <input type="number" step="0.01" min="0" placeholder="Costo $" value="${r.costo || ''}" oninput="updateCheckinRepuestoRow(${idx}, 'costo', this.value)" class="w-full text-xs font-bold border border-slate-200 rounded-lg px-2.5 py-1.5 focus:ring-1 focus:ring-indigo-500">
             </div>
-            <div class="col-span-3">
+            <div class="col-span-4 sm:col-span-2">
               <select onchange="updateCheckinRepuestoRow(${idx}, 'estado', this.value)" class="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5">
                 <option value="A comprar" ${r.estado === 'A comprar' ? 'selected' : ''}>A comprar</option>
                 <option value="Comprado" ${r.estado === 'Comprado' ? 'selected' : ''}>Comprado</option>
+              </select>
+            </div>
+            <div class="col-span-3 sm:col-span-2">
+              <select onchange="updateCheckinRepuestoRow(${idx}, 'proveedor', this.value)" title="Distribuidora / Proveedor" class="w-full text-xs border border-slate-200 rounded-lg px-2 py-1.5 bg-slate-50">
+                ${supOptions}
               </select>
             </div>
             <div class="col-span-1 text-center">
@@ -1781,19 +2155,6 @@
         `;
       });
       recalculateCheckinTotals();
-    }
-
-    // AUTOMATIC CALCULATION: Total = Sum(Repuestos Cost) * 2, Seña = Total / 2
-    function recalculateCheckinTotals() {
-      const sumCost = window.state.checkinRepuestosRows.reduce((acc, r) => acc + Number(r.costo || 0), 0);
-      const totalToCharge = sumCost * 2;
-      const autoSena = totalToCharge / 2; // Equals sumCost
-
-      document.getElementById('calc-costo-repuestos').innerText = `$${sumCost.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
-      document.getElementById('calc-monto-total').innerText = `$${totalToCharge.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
-      document.getElementById('calc-sena-auto').innerText = `$${autoSena.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
-
-      document.getElementById('cost_sena_real').value = autoSena;
     }
 
     window.buscarClientePorDNI = (dniVal) => {
@@ -1871,6 +2232,31 @@
         : 1001;
       const codigo = `OT-${nextNum}`;
 
+      // Brand & Model Handling (with custom catalog learning)
+      const brandSelectVal = document.getElementById('dev_marca_select').value;
+      const brandCustomVal = document.getElementById('dev_marca_custom').value.trim();
+      const marca = brandSelectVal === '__CUSTOM__' ? brandCustomVal : brandSelectVal;
+
+      const modelSelectVal = document.getElementById('dev_modelo_select').value;
+      const modelCustomVal = document.getElementById('dev_modelo_custom').value.trim();
+      const modelo = modelSelectVal === '__CUSTOM__' ? modelCustomVal : modelSelectVal;
+
+      if (!marca) {
+        window.showToast('Por favor selecciona o ingresa la marca del equipo.', 'error');
+        return;
+      }
+      if (!modelo) {
+        window.showToast('Por favor selecciona o ingresa el modelo del equipo.', 'error');
+        return;
+      }
+
+      // Learn new brand/model into customCatalog
+      if (!window.state.customCatalog) window.state.customCatalog = {};
+      if (!window.state.customCatalog[marca]) window.state.customCatalog[marca] = [];
+      if (!window.state.customCatalog[marca].includes(modelo) && (!DEFAULT_BRAND_CATALOG[marca] || !DEFAULT_BRAND_CATALOG[marca].includes(modelo))) {
+        window.state.customCatalog[marca].push(modelo);
+      }
+
       // Lock Security
       const lockType = document.getElementById('dev_lock_type').value;
       let patternDataUrl = '';
@@ -1883,21 +2269,39 @@
         lockValue = document.getElementById('dev_lock_value').value.trim();
       }
 
-      // Calculations
-      const validRepuestos = window.state.checkinRepuestosRows.filter(r => r.descripcion.trim() !== '');
+      // Calculations and Historical handling
+      const validRepuestos = window.state.checkinRepuestosRows.filter(r => (r.descripcion || '').trim() !== '');
       const totalRepuestosCost = validRepuestos.reduce((acc, r) => acc + Number(r.costo || 0), 0);
-      const totalCalculado = totalRepuestosCost * 2;
-      const senaRecibida = parseFloat(document.getElementById('cost_sena_real').value) || 0;
+
+      const isHistorical = document.getElementById('checkin_is_historical')?.checked ?? false;
+      const historicalDateVal = document.getElementById('historical_date')?.value || new Date().toISOString().split('T')[0];
+
+      let totalFinal = parseFloat(document.getElementById('cost_total_order').value);
+      if (isNaN(totalFinal) || totalFinal < 0) totalFinal = totalRepuestosCost * 2;
+
+      let senaRecibida = parseFloat(document.getElementById('cost_sena_real').value) || 0;
       const diasGarantia = parseInt(document.getElementById('garantia_dias_input').value) || 30;
 
+      const fechaIngreso = isHistorical ? historicalDateVal : new Date().toISOString().split('T')[0];
+      const estado = isHistorical ? 'Entregado' : 'Ingresado';
+
       const pagos = [];
-      if (senaRecibida > 0) {
+      if (isHistorical) {
+        pagos.push({
+          id: 'p_' + Date.now(),
+          cuota: 1,
+          monto: totalFinal,
+          metodo: 'Histórico / Saldado',
+          fecha: fechaIngreso,
+          obs: 'Trabajo histórico saldado'
+        });
+      } else if (senaRecibida > 0) {
         pagos.push({
           id: 'p_' + Date.now(),
           cuota: 1,
           monto: senaRecibida,
           metodo: 'Efectivo',
-          fecha: new Date().toISOString().split('T')[0],
+          fecha: fechaIngreso,
           obs: 'Seña abonada al ingresar'
         });
       }
@@ -1906,18 +2310,20 @@
         id: 'r_' + Date.now() + '_' + i,
         descripcion: r.descripcion,
         costo: Number(r.costo || 0),
-        proveedor: '',
-        estado: r.estado || 'A comprar',
+        proveedor: r.proveedor || '',
+        estado: isHistorical ? 'Comprado' : (r.estado || 'A comprar'),
         foto: '',
-        fecha: new Date().toISOString().split('T')[0]
+        fecha: fechaIngreso
       }));
+
+      const manoObraCalculada = Math.max(0, totalFinal - totalRepuestosCost);
 
       const newOrderData = {
         id: 'ord_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
         codigo,
         clienteId: client.id,
-        marca: document.getElementById('dev_marca').value.trim(),
-        modelo: document.getElementById('dev_modelo').value.trim(),
+        marca,
+        modelo,
         imei: document.getElementById('dev_imei').value.trim() || 'S/N',
         lockType,
         lockValue,
@@ -1926,13 +2332,13 @@
         estadoEstetico: document.getElementById('dev_estado_estetico').value.trim() || 'Sin detalles',
         falla: document.getElementById('dev_falla').value.trim(),
         fotos: [...window.state.tempCheckinPhotos],
-        estado: 'Ingresado',
+        estado,
         diasGarantia,
-        manoObra: totalRepuestosCost,
-        total: totalCalculado,
+        manoObra: manoObraCalculada,
+        total: totalFinal,
         pagos,
         repuestosGastos,
-        fechaIngreso: new Date().toISOString().split('T')[0]
+        fechaIngreso
       };
 
       window.state.orders.push(newOrderData);
@@ -1940,7 +2346,7 @@
       // Auto-sync to Google Drive
       window.syncDatabaseToDrive();
 
-      window.showToast('Orden guardada y sincronizada en Google Drive.', 'success');
+      window.showToast(isHistorical ? `Orden histórica ${codigo} registrada como Entregada.` : `Orden ${codigo} guardada y sincronizada en Google Drive.`, 'success');
       document.getElementById('form-checkin').reset();
       window.switchTab('ordenes');
     };
@@ -2322,42 +2728,205 @@
       }
     };
 
-    // ================= WHATSAPP RAW MESSAGE LOGIC =================
-    window.openWhatsAppRawModal = () => {
+    // ================= NOTIFICACIÓN DE ESTADO POR WHATSAPP (SIN DATOS PELADOS) =================
+    window.openWhatsAppStatusModal = () => {
       const order = window.state.orders.find(o => o.id === window.state.selectedOrderId);
       if (!order) return;
-      const client = window.state.clients.find(c => c.id === order.clienteId) || {nombre: 'Cliente', dni: '-'};
+      const client = window.state.clients.find(c => c.id === order.clienteId) || {nombre: 'Cliente', telefono: '-'};
       const paid = (order.pagos || []).reduce((acc, p) => acc + Number(p.monto), 0);
       const saldo = Number(order.total) - paid;
+      const shopName = window.state.shop.nombre || 'Mi Taller';
+
+      let statusMsg = '';
+      if (order.estado === 'Listo para Retirar') {
+        statusMsg = '🎉 *¡Tu equipo ya está listo para retirar!* Puedes pasar por nuestro local.';
+      } else if (order.estado === 'En Reparación') {
+        statusMsg = '🛠️ Te informamos que tu equipo ya se encuentra en el banco de trabajo en reparación.';
+      } else if (order.estado === 'Esperando Repuesto') {
+        statusMsg = '📦 Estamos aguardando el ingreso de los repuestos necesarios para completar el trabajo.';
+      } else if (order.estado === 'En Diagnóstico') {
+        statusMsg = '🔍 Nuestro equipo técnico está realizando el diagnóstico especializado de tu dispositivo.';
+      } else if (order.estado === 'Presupuestado') {
+        statusMsg = '📋 El presupuesto de reparación de tu equipo ya se encuentra disponible.';
+      } else if (order.estado === 'Entregado') {
+        statusMsg = '✅ Equipo entregado. ¡Muchas gracias por confiar en nuestro servicio técnico!';
+      } else {
+        statusMsg = `📋 Estado actual de tu servicio: *${order.estado}*.`;
+      }
 
       const rawText =
-        `Orden: ${order.codigo}
-Cliente: ${client.nombre} (DNI: ${client.dni})
-Equipo: ${order.marca} ${order.modelo}
-Estado: ${order.estado}
-Falla: ${order.falla}
-Presupuesto: $${Number(order.total).toLocaleString('es-AR')}
-Pagado: $${paid.toLocaleString('es-AR')}
-Saldo Pendiente: $${saldo.toLocaleString('es-AR')}
-Garantía: ${order.diasGarantia} días`;
+`Hola *${client.nombre}*! 👋 Te escribimos desde *${shopName}*.
 
-      document.getElementById('wa-raw-preview-text').innerText = rawText;
-      document.getElementById('modal-wa-raw').classList.remove('hidden');
+📱 *Orden de Trabajo:* ${order.codigo}
+🔧 *Equipo:* ${order.marca} ${order.modelo}
+📋 *Estado:* ${order.estado}
+
+${statusMsg}
+
+💰 *Presupuesto Total:* $${Number(order.total).toLocaleString('es-AR')}
+💵 *Abonado:* $${paid.toLocaleString('es-AR')}
+📌 *Saldo Pendiente:* $${saldo.toLocaleString('es-AR')}
+
+${saldo === 0 ? '✨ El saldo está totalmente cancelado.' : '⏳ El saldo se abona al retirar el equipo.'}
+
+Quedamos a tu disposición ante cualquier duda o consulta!`;
+
+      const textEl = document.getElementById('wa-status-text');
+      if (textEl) textEl.value = rawText;
+      document.getElementById('modal-wa-status').classList.remove('hidden');
     };
 
-    window.sendWhatsAppRawNow = () => {
+    window.sendWhatsAppStatusNow = () => {
       const order = window.state.orders.find(o => o.id === window.state.selectedOrderId);
       if (!order) return;
       const client = window.state.clients.find(c => c.id === order.clienteId);
       if (!client || !client.telefono) {
-        window.showToast('El cliente no posee número de teléfono.', 'error');
+        window.showToast('El cliente no posee número de teléfono registrado.', 'error');
         return;
       }
-      const rawText = document.getElementById('wa-raw-preview-text').innerText;
+      const rawText = document.getElementById('wa-status-text').value;
       const cleanPhone = client.telefono.replace(/[^0-9]/g, '');
       const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(rawText)}`;
       window.open(url, '_blank');
-      window.closeModal('modal-wa-raw');
+      window.closeModal('modal-wa-status');
+    };
+
+    // ================= AGENDA DE DISTRIBUIDORAS / PROVEEDORES =================
+    window.openNewSupplierModal = () => {
+      window.state.editingSupplierId = null;
+      document.getElementById('modal-supplier-title').innerHTML = '<i class="fa-solid fa-truck-ramp-box text-indigo-600"></i> Nueva Distribuidora';
+      document.getElementById('sup_id').value = '';
+      document.getElementById('sup_nombre').value = '';
+      document.getElementById('sup_telefono').value = '';
+      document.getElementById('sup_direccion').value = '';
+      document.getElementById('sup_notas').value = '';
+      document.getElementById('modal-supplier').classList.remove('hidden');
+    };
+
+    window.openEditSupplierModal = (id) => {
+      const s = (window.state.suppliers || []).find(item => item.id === id);
+      if (!s) return;
+      window.state.editingSupplierId = id;
+      document.getElementById('modal-supplier-title').innerHTML = '<i class="fa-solid fa-pen text-indigo-600"></i> Editar Distribuidora';
+      document.getElementById('sup_id').value = s.id;
+      document.getElementById('sup_nombre').value = s.nombre || '';
+      document.getElementById('sup_telefono').value = s.telefono || '';
+      document.getElementById('sup_direccion').value = s.direccion || '';
+      document.getElementById('sup_notas').value = s.notas || '';
+      document.getElementById('modal-supplier').classList.remove('hidden');
+    };
+
+    window.handleSaveSupplier = (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById('sup_nombre').value.trim();
+      const telefono = document.getElementById('sup_telefono').value.trim();
+      const direccion = document.getElementById('sup_direccion').value.trim();
+      const notas = document.getElementById('sup_notas').value.trim();
+
+      if (!nombre) return;
+      if (!Array.isArray(window.state.suppliers)) window.state.suppliers = [];
+
+      if (window.state.editingSupplierId) {
+        const idx = window.state.suppliers.findIndex(s => s.id === window.state.editingSupplierId);
+        if (idx !== -1) {
+          window.state.suppliers[idx] = {...window.state.suppliers[idx], nombre, telefono, direccion, notas};
+        }
+      } else {
+        window.state.suppliers.push({
+          id: 'sup_' + Date.now(),
+          nombre,
+          telefono,
+          direccion,
+          notas
+        });
+      }
+
+      window.syncDatabaseToDrive();
+      window.closeModal('modal-supplier');
+      window.showToast('Distribuidora guardada correctamente.', 'success');
+      renderSuppliersTable();
+      renderCheckinRepuestosRows();
+    };
+
+    window.deleteSupplier = (id) => {
+      const s = (window.state.suppliers || []).find(item => item.id === id);
+      if (!s) return;
+      if (confirm(`¿Estás seguro de eliminar a la distribuidora "${s.nombre}"?`)) {
+        window.state.suppliers = window.state.suppliers.filter(item => item.id !== id);
+        window.syncDatabaseToDrive();
+        window.showToast(`Distribuidora "${s.nombre}" eliminada.`, 'success');
+        renderSuppliersTable();
+        renderCheckinRepuestosRows();
+      }
+    };
+
+    function renderSuppliersTable() {
+      const tbody = document.getElementById('suppliers-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      const searchInput = document.getElementById('search-suppliers');
+      const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+      const list = (window.state.suppliers || []).filter(s => {
+        return (s.nombre || '').toLowerCase().includes(search) ||
+          (s.direccion || '').toLowerCase().includes(search) ||
+          (s.notas || '').toLowerCase().includes(search) ||
+          (s.telefono || '').includes(search);
+      });
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-sm text-slate-400">Sin distribuidoras registradas. Haz clic en "Nueva Distribuidora" para agregar una.</td></tr>`;
+        return;
+      }
+
+      list.forEach(s => {
+        let partsCount = 0;
+        (window.state.orders || []).forEach(o => {
+          (o.repuestosGastos || []).forEach(r => {
+            if (r.proveedor && r.proveedor.trim().toLowerCase() === s.nombre.trim().toLowerCase()) {
+              partsCount++;
+            }
+          });
+        });
+
+        const cleanPhone = (s.telefono || '').replace(/[^0-9]/g, '');
+        const waLink = cleanPhone ? `<a href="https://wa.me/${cleanPhone}" target="_blank" class="text-emerald-600 hover:text-emerald-700 font-medium inline-flex items-center gap-1"><i class="fa-brands fa-whatsapp text-sm"></i> ${s.telefono}</a>` : (s.telefono || '-');
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="p-4 font-bold text-slate-800">${s.nombre}</td>
+            <td class="p-4">${waLink}</td>
+            <td class="p-4 text-slate-600">${s.direccion || '-'}</td>
+            <td class="p-4 text-slate-500 text-xs">${s.notas || '-'}</td>
+            <td class="p-4 text-center font-bold text-indigo-600">${partsCount}</td>
+            <td class="p-4 text-center">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="openEditSupplierModal('${s.id}')" title="Editar Distribuidora"
+                  class="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs transition-all">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button onclick="deleteSupplier('${s.id}')" title="Eliminar Distribuidora"
+                  class="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs transition-all">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    window.handleRepuestoModalSupplierChange = (val) => {
+      const customInput = document.getElementById('rep_proveedor_custom');
+      if (!customInput) return;
+      if (val === '__CUSTOM__') {
+        customInput.classList.remove('hidden');
+        customInput.focus();
+      } else {
+        customInput.classList.add('hidden');
+        customInput.value = '';
+      }
     };
 
     // ================= PAYMENTS & SPARE PARTS MODALS =================
@@ -2409,6 +2978,22 @@ Garantía: ${order.diasGarantia} días`;
       window.state.orders.forEach(o => {
         select.innerHTML += `<option value="${o.id}">${o.codigo} - ${o.marca} ${o.modelo}</option>`;
       });
+
+      const provSelect = document.getElementById('rep_proveedor_select');
+      if (provSelect) {
+        let html = '<option value="">Stock propio / Sin especificar</option>';
+        (window.state.suppliers || []).forEach(s => {
+          html += `<option value="${s.nombre}">${s.nombre}</option>`;
+        });
+        html += '<option value="__CUSTOM__">+ Escribir otro...</option>';
+        provSelect.innerHTML = html;
+      }
+      const customInput = document.getElementById('rep_proveedor_custom');
+      if (customInput) {
+        customInput.classList.add('hidden');
+        customInput.value = '';
+      }
+
       document.getElementById('modal-add-repuesto').classList.remove('hidden');
     };
 
@@ -2437,7 +3022,9 @@ Garantía: ${order.diasGarantia} días`;
 
       const desc = document.getElementById('rep_descripcion').value.trim();
       const costo = parseFloat(document.getElementById('rep_costo').value) || 0;
-      const proveedor = document.getElementById('rep_proveedor').value.trim();
+      const provSelectVal = document.getElementById('rep_proveedor_select').value;
+      const provCustomVal = document.getElementById('rep_proveedor_custom').value.trim();
+      const proveedor = provSelectVal === '__CUSTOM__' ? provCustomVal : provSelectVal;
       const estadoRep = document.getElementById('rep_estado').value;
 
       if (!order.repuestosGastos) order.repuestosGastos = [];
@@ -2446,7 +3033,7 @@ Garantía: ${order.diasGarantia} días`;
         id: 'r_' + Date.now(),
         descripcion: desc,
         costo,
-        proveedor,
+        proveedor: proveedor || '',
         estado: estadoRep,
         foto: window.state.tempRepuestoTicket || '',
         fecha: new Date().toISOString().split('T')[0]
@@ -2519,8 +3106,8 @@ Garantía: ${order.diasGarantia} días`;
       });
     }
 
-    // ================= PDF GENERATION (jsPDF + autoTable) =================
-    window.downloadPDF = (type) => {
+    // ================= GENERACIÓN UNIFICADA DE PDFS (TICKET DE INGRESO Y GARANTÍA) =================
+    window.downloadTicketIngresoPDF = () => {
       const order = window.state.orders.find(o => o.id === window.state.selectedOrderId);
       if (!order) return;
       const client = window.state.clients.find(c => c.id === order.clienteId) || {nombre: 'Cliente', dni: '-', telefono: '-'};
@@ -2528,6 +3115,7 @@ Garantía: ${order.diasGarantia} días`;
       const doc = new jsPDF();
       const shopName = (window.state.shop.nombre || 'Mi Taller').toUpperCase();
 
+      // Header Bar
       doc.setFillColor(30, 41, 59);
       doc.rect(0, 0, 210, 35, 'F');
 
@@ -2541,116 +3129,254 @@ Garantía: ${order.diasGarantia} días`;
       doc.text(`CUIT/DNI: ${window.state.shop.cuit || '-'} | Tel: ${window.state.shop.telefono || '-'}`, 14, 25);
       doc.text(window.state.shop.direccion || 'Servicio Técnico Especializado', 14, 30);
 
-      let titleText = 'TICKET DE INGRESO';
-      if (type === 'presupuesto') titleText = 'PRESUPUESTO';
-      if (type === 'garantia') titleText = 'CERTIFICADO DE GARANTÍA';
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('TICKET DE INGRESO', 196, 18, {align: 'right'});
+      doc.setFontSize(10);
+      doc.text(`CÓDIGO: ${order.codigo}`, 196, 26, {align: 'right'});
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Fecha: ${order.fechaIngreso || new Date().toISOString().split('T')[0]}`, 196, 31, {align: 'right'});
+
+      // Box: Datos Cliente y Dispositivo
+      let y = 43;
+      doc.setFillColor(248, 250, 252);
+      doc.rect(14, y, 182, 34, 'F');
+      doc.setDrawColor(226, 232, 240);
+      doc.rect(14, y, 182, 34, 'S');
+
+      doc.setTextColor(30, 41, 59);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DATOS DEL CLIENTE', 18, y + 7);
+      doc.text('DATOS DEL DISPOSITIVO', 110, y + 7);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.text(`Nombre: ${client.nombre}`, 18, y + 14);
+      doc.text(`DNI / CUIT: ${client.dni}`, 18, y + 20);
+      doc.text(`Teléfono: ${client.telefono}`, 18, y + 26);
+
+      doc.text(`Equipo: ${order.marca} ${order.modelo}`, 110, y + 14);
+      doc.text(`IMEI: ${order.imei || 'S/N'}`, 110, y + 20);
+      doc.text(`Seguridad: ${order.lockType} ${order.lockValue ? '(' + order.lockValue + ')' : ''}`, 110, y + 26);
+
+      y += 40;
+
+      // Detalles de Recepción y Falla
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(8.5);
+      doc.text('DETALLES DE RECEPCIÓN:', 14, y);
+      y += 5;
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Accesorios: ${order.accesorios || 'Ninguno'}`, 14, y);
+      y += 5;
+      doc.text(`Estado Estético: ${order.estadoEstetico || 'Sin detalles'}`, 14, y);
+      y += 6;
+
+      doc.setFont('helvetica', 'bold');
+      doc.text('FALLA REPORTADA:', 14, y);
+      y += 5;
+      doc.setFont('helvetica', 'normal');
+      const splitFalla = doc.splitTextToSize(order.falla || 'Diagnóstico general', 182);
+      doc.text(splitFalla, 14, y);
+      y += (splitFalla.length * 4) + 4;
+
+      // Dibujo de Patrón de desbloqueo si existe
+      if (order.lockType === 'Patrón' && order.patternDataUrl) {
+        doc.setFont('helvetica', 'bold');
+        doc.text('PATRÓN DE DESBLOQUEO:', 14, y);
+        try {
+          doc.addImage(order.patternDataUrl, 'PNG', 14, y + 3, 26, 26);
+          y += 32;
+        } catch (e) {
+          y += 6;
+        }
+      }
+
+      // Tabla de Conceptos y Presupuesto
+      const rows = [
+        ['Mano de Obra & Diagnóstico Especializado', `$${Number(order.manoObra || 0).toLocaleString('es-AR')}`]
+      ];
+      (order.repuestosGastos || []).forEach(r => {
+        rows.push([`Repuesto: ${r.descripcion}`, `$${Number(r.costo || 0).toLocaleString('es-AR')}`]);
+      });
+
+      doc.autoTable({
+        startY: y,
+        head: [['Concepto / Trabajo / Repuestos', 'Monto']],
+        body: rows,
+        theme: 'striped',
+        headStyles: {fillColor: [79, 70, 229]},
+        styles: {fontSize: 8, cellPadding: 2.5}
+      });
+
+      y = doc.lastAutoTable.finalY + 8;
+      const paid = (order.pagos || []).reduce((acc, p) => acc + Number(p.monto), 0);
+      const saldo = Number(order.total) - paid;
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text(`TOTAL PRESUPUESTO: $${Number(order.total).toLocaleString('es-AR')}`, 196, y, {align: 'right'});
+      y += 5;
+      doc.text(`TOTAL ABONADO / SEÑA: $${paid.toLocaleString('es-AR')}`, 196, y, {align: 'right'});
+      y += 5;
+      doc.setTextColor(saldo > 0 ? 217 : 16, saldo > 0 ? 119 : 185, saldo > 0 ? 6 : 129);
+      doc.text(`SALDO PENDIENTE: $${saldo.toLocaleString('es-AR')}`, 196, y, {align: 'right'});
+      doc.setTextColor(30, 41, 59);
+
+      // Apartado de Firmas (condicional según checkbox)
+      const includeSignatures = document.getElementById('pdf_include_signatures')?.checked ?? true;
+      if (includeSignatures) {
+        y += 18;
+        if (y > 260) {
+          doc.addPage();
+          y = 35;
+        }
+        doc.setDrawColor(148, 163, 184);
+        doc.line(25, y, 85, y);
+        doc.line(125, y, 185, y);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Firma del Cliente', 55, y + 5, {align: 'center'});
+        doc.text(`Firma ${shopName}`, 155, y + 5, {align: 'center'});
+      }
+
+      const safeClient = (client.nombre || 'Cliente').replace(/[^a-zA-Z0-9_-]/g, '_');
+      doc.save(`Ticket_Ingreso_${order.codigo}_${safeClient}.pdf`);
+      window.showToast('Ticket de Ingreso descargado correctamente.', 'success');
+    };
+
+    window.downloadGarantiaPDF = () => {
+      const order = window.state.orders.find(o => o.id === window.state.selectedOrderId);
+      if (!order) return;
+      const client = window.state.clients.find(c => c.id === order.clienteId) || {nombre: 'Cliente', dni: '-', telefono: '-'};
+      const {jsPDF} = window.jspdf;
+      const doc = new jsPDF();
+      const shopName = (window.state.shop.nombre || 'Mi Taller').toUpperCase();
+
+      // Header Bar
+      doc.setFillColor(30, 41, 59);
+      doc.rect(0, 0, 210, 35, 'F');
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.text(shopName, 14, 18);
+
+      doc.setFontSize(8.5);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`CUIT/DNI: ${window.state.shop.cuit || '-'} | Tel: ${window.state.shop.telefono || '-'}`, 14, 25);
+      doc.text(window.state.shop.direccion || 'Servicio Técnico Especializado', 14, 30);
 
       doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
-      doc.text(titleText, 196, 18, {align: 'right'});
+      doc.text('CERTIFICADO DE GARANTÍA', 196, 18, {align: 'right'});
       doc.setFontSize(10);
       doc.text(`CÓDIGO: ${order.codigo}`, 196, 26, {align: 'right'});
 
-      let y = 45;
+      const hoy = new Date();
+      const fechaEntregaStr = hoy.toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit', year: 'numeric'});
 
+      // Box: Datos Cliente y Dispositivo
+      let y = 43;
       doc.setFillColor(248, 250, 252);
-      doc.rect(14, y, 182, 36, 'F');
+      doc.rect(14, y, 182, 34, 'F');
       doc.setDrawColor(226, 232, 240);
-      doc.rect(14, y, 182, 36, 'S');
+      doc.rect(14, y, 182, 34, 'S');
+
+      doc.setTextColor(30, 41, 59);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DATOS DEL CLIENTE', 18, y + 7);
+      doc.text('DATOS DEL DISPOSITIVO', 110, y + 7);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.text(`Nombre: ${client.nombre}`, 18, y + 14);
+      doc.text(`DNI / CUIT: ${client.dni}`, 18, y + 20);
+      doc.text(`Teléfono: ${client.telefono}`, 18, y + 26);
+
+      doc.text(`Equipo: ${order.marca} ${order.modelo}`, 110, y + 14);
+      doc.text(`IMEI: ${order.imei || 'S/N'}`, 110, y + 20);
+      doc.text(`Fecha de Entrega: ${fechaEntregaStr}`, 110, y + 26);
+
+      y += 42;
+
+      // Tabla de Trabajos / Repuestos
+      const rows = [
+        ['Mano de Obra & Calibración Garantizada', `$${Number(order.manoObra || 0).toLocaleString('es-AR')}`]
+      ];
+      (order.repuestosGastos || []).forEach(r => {
+        rows.push([`Repuesto Instalado: ${r.descripcion}`, `$${Number(r.costo || 0).toLocaleString('es-AR')}`]);
+      });
+
+      doc.autoTable({
+        startY: y,
+        head: [['Concepto / Componente Cubierto', 'Monto']],
+        body: rows,
+        theme: 'striped',
+        headStyles: {fillColor: [126, 34, 206]},
+        styles: {fontSize: 8, cellPadding: 2.5}
+      });
+
+      y = doc.lastAutoTable.finalY + 8;
+      const paid = (order.pagos || []).reduce((acc, p) => acc + Number(p.monto), 0);
+
+      // Financials (SIN SALDO PENDIENTE, YA QUE FUE SALDADO AL ENTREGAR)
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9);
+      doc.text(`TOTAL DEL SERVICIO: $${Number(order.total).toLocaleString('es-AR')}`, 196, y, {align: 'right'});
+      y += 5;
+      doc.text(`TOTAL ABONADO: $${paid.toLocaleString('es-AR')}`, 196, y, {align: 'right'});
+      y += 10;
+
+      // Cobertura de Garantía con Fecha Exacta de Vencimiento
+      const dias = parseInt(order.diasGarantia, 10) || 30;
+      const vencimiento = new Date(hoy.getTime() + dias * 24 * 60 * 60 * 1000);
+      const fechaVencStr = vencimiento.toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit', year: 'numeric'});
+
+      doc.setFillColor(243, 244, 246);
+      doc.rect(14, y, 182, 26, 'F');
+      doc.setDrawColor(209, 213, 219);
+      doc.rect(14, y, 182, 26, 'S');
 
       doc.setTextColor(30, 41, 59);
       doc.setFontSize(9.5);
       doc.setFont('helvetica', 'bold');
-      doc.text('DATOS DEL CLIENTE', 18, y + 8);
-      doc.text('DATOS DEL DISPOSITIVO', 110, y + 8);
+      doc.text(`COBERTURA DE GARANTÍA: ${dias} DÍAS`, 18, y + 8);
+      doc.setTextColor(126, 34, 206);
+      doc.text(`Válida hasta el: ${fechaVencStr}`, 18, y + 15);
 
+      doc.setTextColor(75, 85, 99);
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8.5);
-      doc.text(`Nombre: ${client.nombre}`, 18, y + 16);
-      doc.text(`DNI: ${client.dni}`, 18, y + 22);
-      doc.text(`Teléfono: ${client.telefono}`, 18, y + 28);
+      doc.setFontSize(7.5);
+      doc.text(`La garantía ampara fallas de fabricación sobre los repuestos instalados desde el ${fechaEntregaStr} hasta el ${fechaVencStr}.`, 18, y + 21);
+      doc.text('No cubre roturas por caídas, golpes, humedad o manipulación de terceros.', 18, y + 25);
 
-      doc.text(`Equipo: ${order.marca} ${order.modelo}`, 110, y + 16);
-      doc.text(`IMEI: ${order.imei}`, 110, y + 22);
-      doc.text(`Seguridad: ${order.lockType} ${order.lockValue ? '(' + order.lockValue + ')' : ''}`, 110, y + 28);
-
-      y += 44;
-
-      if (type === 'ingreso') {
-        doc.setFont('helvetica', 'bold');
-        doc.text('DETALLES DE RECEPCIÓN:', 14, y);
-        y += 6;
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Accesorios: ${order.accesorios}`, 14, y);
-        y += 5;
-        doc.text(`Estado Estético: ${order.estadoEstetico}`, 14, y);
-        y += 8;
-
-        doc.setFont('helvetica', 'bold');
-        doc.text('FALLA REPORTADA:', 14, y);
-        y += 6;
-        doc.setFont('helvetica', 'normal');
-        doc.text(order.falla, 14, y);
-
-        if (order.lockType === 'Patrón' && order.patternDataUrl) {
-          y += 10;
-          doc.setFont('helvetica', 'bold');
-          doc.text('PATRÓN DE DESBLOQUEO:', 14, y);
-          doc.addImage(order.patternDataUrl, 'PNG', 14, y + 4, 30, 30);
-          y += 35;
-        } else {
-          y += 15;
-        }
-
-        y += 15;
-        doc.line(25, y, 85, y);
-        doc.line(125, y, 185, y);
-        doc.setFontSize(8.5);
-        doc.text('Firma del Cliente', 55, y + 5, {align: 'center'});
-        doc.text(`Firma ${shopName}`, 155, y + 5, {align: 'center'});
-
-      } else {
-        const rows = [
-          ['Mano de Obra & Diagnóstico Especializado', `$${Number(order.manoObra || 0).toLocaleString('es-AR')}`]
-        ];
-        (order.repuestosGastos || []).forEach(r => {
-          rows.push([`Repuesto: ${r.descripcion}`, `$${Number(r.costo).toLocaleString('es-AR')}`]);
-        });
-
-        doc.autoTable({
-          startY: y,
-          head: [['Concepto / Trabajo', 'Monto']],
-          body: rows,
-          theme: 'striped',
-          headStyles: {fillColor: [79, 70, 229]}
-        });
-
-        y = doc.lastAutoTable.finalY + 10;
-        const paid = (order.pagos || []).reduce((acc, p) => acc + Number(p.monto), 0);
-        const saldo = Number(order.total) - paid;
-
-        doc.setFont('helvetica', 'bold');
-        doc.text(`TOTAL PRESUPUESTO: $${Number(order.total).toLocaleString('es-AR')}`, 196, y, {align: 'right'});
-        y += 6;
-        doc.text(`TOTAL PAGADO: $${paid.toLocaleString('es-AR')}`, 196, y, {align: 'right'});
-        y += 6;
-        doc.text(`SALDO PENDIENTE: $${saldo.toLocaleString('es-AR')}`, 196, y, {align: 'right'});
-
-        if (type === 'garantia') {
-          y += 15;
-          doc.setFillColor(243, 244, 246);
-          doc.rect(14, y, 182, 20, 'F');
-          doc.setTextColor(30, 41, 59);
-          doc.setFont('helvetica', 'bold');
-          doc.text(`COBERTURA DE GARANTÍA: ${order.diasGarantia} DÍAS`, 18, y + 8);
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(8);
-          doc.text(`Garantía válida por ${order.diasGarantia} días sobre los repuestos instalados desde la fecha de retiro.`, 18, y + 14);
-        }
+      y += 40;
+      if (y > 260) {
+        doc.addPage();
+        y = 35;
       }
+      doc.setDrawColor(148, 163, 184);
+      doc.line(25, y, 85, y);
+      doc.line(125, y, 185, y);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(30, 41, 59);
+      doc.text('Conformidad del Cliente', 55, y + 5, {align: 'center'});
+      doc.text(`Firma y Sello ${shopName}`, 155, y + 5, {align: 'center'});
 
-      doc.save(`${order.codigo}_${type.toUpperCase()}.pdf`);
-      window.showToast('PDF generado correctamente.', 'success');
+      const safeClient = (client.nombre || 'Cliente').replace(/[^a-zA-Z0-9_-]/g, '_');
+      doc.save(`Garantia_${order.codigo}_${safeClient}.pdf`);
+      window.showToast('Certificado de Garantía descargado correctamente.', 'success');
+    };
+
+    // Legacy fallback
+    window.downloadPDF = (type) => {
+      if (type === 'garantia') window.downloadGarantiaPDF();
+      else window.downloadTicketIngresoPDF();
     };
 
     // ================= UTILS =================
