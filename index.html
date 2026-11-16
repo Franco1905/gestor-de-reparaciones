@@ -1327,44 +1327,23 @@
           window.state.clients = initialDb.clients;
           window.state.orders = initialDb.orders;
 
-          const boundary = 'taller_init_boundary_' + Date.now();
-          const metadata = {
-            name: DB_FILE_NAME,
-            mimeType: 'application/json'
-          };
-
-          const multipartBody =
-            `--${boundary}
-
-` +
-            `Content-Type: application/json; charset=UTF-8
-
-
-
-` +
-            `${JSON.stringify(metadata)}
-
-` +
-            `--${boundary}
-
-` +
-            `Content-Type: application/json
-
-
-
-` +
-            `${JSON.stringify(initialDb, null, 2)}
-
-` +
-            `--${boundary}--`;
+          // Creación de archivo inicial mediante FormData nativo (sin boundary manual para evitar error CORS)
+          const formData = new FormData();
+          formData.append(
+            'metadata',
+            new Blob([JSON.stringify({ name: DB_FILE_NAME, mimeType: 'application/json' })], { type: 'application/json' })
+          );
+          formData.append(
+            'file',
+            new Blob([JSON.stringify(initialDb, null, 2)], { type: 'application/json' })
+          );
 
           const createRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
             method: 'POST',
             headers: {
-              'Authorization': `Bearer ${window.accessToken}`,
-              'Content-Type': `multipart/related; boundary=${boundary}`
+              'Authorization': `Bearer ${window.accessToken}`
             },
-            body: multipartBody
+            body: formData
           });
 
           if (!createRes.ok) {
@@ -1404,7 +1383,7 @@
       }, 800);
     };
 
-    // 3. Overwrite (PATCH) file in Google Drive via multipart/related
+    // 3. Overwrite (PATCH) file in Google Drive via uploadType=media (sin límites manuales para evitar CORS)
     async function executeDrivePatch() {
       if (isSavingToDrive) {
         hasPendingSave = true;
@@ -1436,45 +1415,13 @@
           lastUpdated: new Date().toISOString()
         };
 
-        const jsonString = JSON.stringify(dbPayload, null, 2);
-        const boundary = 'taller_patch_boundary_' + Date.now();
-        const metadata = {
-          name: DB_FILE_NAME,
-          mimeType: 'application/json'
-        };
-
-        const multipartBody =
-          `--${boundary}
-
-` +
-          `Content-Type: application/json; charset=UTF-8
-
-
-
-` +
-          `${JSON.stringify(metadata)}
-
-` +
-          `--${boundary}
-
-` +
-          `Content-Type: application/json
-
-
-
-` +
-          `${jsonString}
-
-` +
-          `--${boundary}--`;
-
-        const res = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${window.driveFileId}?uploadType=multipart`, {
+        const res = await fetch(`https://www.googleapis.com/upload/drive/v3/files/${window.driveFileId}?uploadType=media`, {
           method: 'PATCH',
           headers: {
             'Authorization': `Bearer ${window.accessToken}`,
-            'Content-Type': `multipart/related; boundary=${boundary}`
+            'Content-Type': 'application/json'
           },
-          body: multipartBody
+          body: JSON.stringify(dbPayload, null, 2)
         });
 
         if (res.ok) {
