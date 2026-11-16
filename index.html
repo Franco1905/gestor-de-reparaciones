@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,21 +17,45 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-    body { font-family: 'Inter', sans-serif; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #f1f5f9; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    canvas { touch-action: none; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    canvas {
+      touch-action: none;
+    }
   </style>
 </head>
+
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col md:flex-row pb-16 md:pb-0">
 
   <!-- ================= AUTH SCREEN (GOOGLE IDENTITY SERVICES) ================= -->
-  <div id="auth-screen" class="fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 border border-slate-100">
+  <div id="auth-screen"
+    class="fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-4">
+    <div
+      class="bg-white w-full max-w-md rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 border border-slate-100">
       <div class="text-center space-y-2">
-        <div class="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-lg shadow-indigo-500/30">
+        <div
+          class="w-16 h-16 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-lg shadow-indigo-500/30">
           <i class="fa-solid fa-screwdriver-wrench"></i>
         </div>
         <h2 class="text-2xl font-extrabold text-slate-900">Gestión de Taller</h2>
@@ -40,38 +65,49 @@
       <!-- Drive Storage & Scope Info -->
       <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 text-xs text-slate-600 space-y-2.5">
         <div class="flex items-start gap-3">
-          <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <div
+            class="w-7 h-7 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 mt-0.5">
             <i class="fa-brands fa-google-drive text-sm"></i>
           </div>
           <div>
             <span class="font-bold text-slate-800 block text-xs">Base de datos en taller_reparaciones_db.json</span>
-            <span class="text-[11px] text-slate-500 leading-tight block mt-0.5">Tus clientes, órdenes y repuestos se guardan en un archivo JSON en tu Google Drive personal.</span>
+            <span class="text-[11px] text-slate-500 leading-tight block mt-0.5">Tus clientes, órdenes y repuestos se
+              guardan en un archivo JSON en tu Google Drive personal.</span>
           </div>
         </div>
         <div class="flex items-start gap-3 pt-2 border-t border-slate-200/60">
-          <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <div
+            class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 mt-0.5">
             <i class="fa-solid fa-shield-halved text-xs"></i>
           </div>
           <div>
             <span class="font-bold text-slate-800 block text-xs">Permiso Seguro y Mínimo</span>
-            <span class="text-[11px] text-slate-500 leading-tight block mt-0.5">Solo accede a los archivos creados por esta aplicación (<code>drive.file</code>). No tiene acceso al resto de tus archivos privados.</span>
+            <span class="text-[11px] text-slate-500 leading-tight block mt-0.5">Solo accede a los archivos creados por
+              esta aplicación (<code>drive.file</code>). No tiene acceso al resto de tus archivos privados.</span>
           </div>
         </div>
       </div>
 
       <!-- Google Sign In Button -->
       <div class="space-y-3 pt-1">
-        <button type="button" id="btn-google-login" onclick="handleGoogleLogin()" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3.5 px-4 rounded-xl border border-slate-300 shadow-sm hover:shadow transition-all flex items-center justify-center gap-3 text-sm group active:scale-[0.99]">
+        <button type="button" id="btn-google-login" onclick="handleGoogleLogin()"
+          class="w-full bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3.5 px-4 rounded-xl border border-slate-300 shadow-sm hover:shadow transition-all flex items-center justify-center gap-3 text-sm group active:scale-[0.99]">
           <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            <path fill="#4285F4"
+              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853"
+              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05"
+              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+            <path fill="#EA4335"
+              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
           </svg>
           <span class="text-slate-800 font-medium">Continuar con Google</span>
         </button>
 
-        <div id="auth-error" class="hidden text-xs text-red-600 bg-red-50 p-3.5 rounded-xl border border-red-200 font-medium leading-relaxed"></div>
+        <div id="auth-error"
+          class="hidden text-xs text-red-600 bg-red-50 p-3.5 rounded-xl border border-red-200 font-medium leading-relaxed">
+        </div>
       </div>
     </div>
   </div>
@@ -81,41 +117,51 @@
     <div class="p-5 border-b border-slate-800 flex items-center justify-between">
       <div class="flex items-center gap-3 min-w-0">
         <div class="relative flex-shrink-0">
-          <div id="sidebar-shop-icon" class="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-500/30 flex items-center justify-center w-10 h-10">
+          <div id="sidebar-shop-icon"
+            class="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-500/30 flex items-center justify-center w-10 h-10">
             <i class="fa-solid fa-mobile-screen-button text-lg"></i>
           </div>
-          <img id="user-avatar-img" class="w-10 h-10 rounded-xl object-cover border border-slate-700 hidden shadow" alt="Avatar">
+          <img id="user-avatar-img" class="w-10 h-10 rounded-xl object-cover border border-slate-700 hidden shadow"
+            alt="Avatar">
         </div>
         <div class="truncate">
           <h1 id="sidebar-shop-name" class="font-bold text-base leading-tight tracking-tight truncate">Mi Taller</h1>
           <p id="user-email-display" class="text-[11px] text-slate-400 truncate">usuario@taller.com</p>
         </div>
       </div>
-      <button onclick="openBusinessConfigModal()" title="Editar nombre del taller" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 text-xs flex-shrink-0">
+      <button onclick="openBusinessConfigModal()" title="Editar nombre del taller"
+        class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 text-xs flex-shrink-0">
         <i class="fa-solid fa-gear"></i>
       </button>
     </div>
 
     <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+      <button onclick="switchTab('dashboard')" id="nav-dashboard"
+        class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
         <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
       </button>
-      <button onclick="switchTab('nueva_orden')" id="nav-nueva_orden" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+      <button onclick="switchTab('nueva_orden')" id="nav-nueva_orden"
+        class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
         <i class="fa-solid fa-circle-plus w-5 text-center"></i> Nueva Orden (Check-in)
       </button>
-      <button onclick="switchTab('ordenes')" id="nav-ordenes" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+      <button onclick="switchTab('ordenes')" id="nav-ordenes"
+        class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
         <i class="fa-solid fa-list-check w-5 text-center"></i> Órdenes de Trabajo
       </button>
-      <button onclick="switchTab('clientes')" id="nav-clientes" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+      <button onclick="switchTab('clientes')" id="nav-clientes"
+        class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
         <i class="fa-solid fa-users w-5 text-center"></i> Clientes
       </button>
-      <button onclick="switchTab('repuestos')" id="nav-repuestos" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+      <button onclick="switchTab('repuestos')" id="nav-repuestos"
+        class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
         <i class="fa-solid fa-boxes-packing w-5 text-center"></i> Repuestos / Compras
       </button>
     </nav>
 
     <div class="p-4 border-t border-slate-800 bg-slate-950/50 flex flex-col gap-3">
-      <div id="drive-sync-indicator-sidebar" onclick="retrySyncIfNeeded()" class="flex items-center gap-2 cursor-pointer transition-all" title="Estado de sincronización con Google Drive (Clic para reintentar si hay error)">
+      <div id="drive-sync-indicator-sidebar" onclick="retrySyncIfNeeded()"
+        class="flex items-center gap-2 cursor-pointer transition-all"
+        title="Estado de sincronización con Google Drive (Clic para reintentar si hay error)">
         <span id="sync-dot-sidebar" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
         <span id="sync-text-sidebar" class="text-xs font-semibold text-slate-300">Sincronizado con Google Drive</span>
       </div>
@@ -123,7 +169,8 @@
         <div class="flex items-center gap-2 truncate">
           <span id="sidebar-user-name" class="text-xs text-slate-400 truncate">Técnico</span>
         </div>
-        <button onclick="handleLogout()" class="text-xs text-red-400 hover:text-red-300 hover:underline font-semibold flex items-center gap-1">
+        <button onclick="handleLogout()"
+          class="text-xs text-red-400 hover:text-red-300 hover:underline font-semibold flex items-center gap-1">
           <i class="fa-solid fa-right-from-bracket"></i> Salir
         </button>
       </div>
@@ -131,20 +178,25 @@
   </aside>
 
   <!-- ================= MOBILE BOTTOM NAVIGATION ================= -->
-  <div class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 z-40 flex justify-around p-2 text-slate-400 shadow-2xl">
-    <button onclick="switchTab('dashboard')" id="mnav-dashboard" class="mnav-btn flex flex-col items-center p-1 text-[10px] font-medium">
+  <div
+    class="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 z-40 flex justify-around p-2 text-slate-400 shadow-2xl">
+    <button onclick="switchTab('dashboard')" id="mnav-dashboard"
+      class="mnav-btn flex flex-col items-center p-1 text-[10px] font-medium">
       <i class="fa-solid fa-chart-pie text-base mb-0.5"></i>
       <span>Inicio</span>
     </button>
-    <button onclick="switchTab('nueva_orden')" id="mnav-nueva_orden" class="mnav-btn flex flex-col items-center p-1 text-[10px] font-medium">
+    <button onclick="switchTab('nueva_orden')" id="mnav-nueva_orden"
+      class="mnav-btn flex flex-col items-center p-1 text-[10px] font-medium">
       <i class="fa-solid fa-circle-plus text-base mb-0.5"></i>
       <span>Ingreso</span>
     </button>
-    <button onclick="switchTab('ordenes')" id="mnav-ordenes" class="mnav-btn flex flex-col items-center p-1 text-[10px] font-medium">
+    <button onclick="switchTab('ordenes')" id="mnav-ordenes"
+      class="mnav-btn flex flex-col items-center p-1 text-[10px] font-medium">
       <i class="fa-solid fa-list-check text-base mb-0.5"></i>
       <span>Órdenes</span>
     </button>
-    <button onclick="switchTab('repuestos')" id="mnav-repuestos" class="mnav-btn flex flex-col items-center p-1 text-[10px] font-medium">
+    <button onclick="switchTab('repuestos')" id="mnav-repuestos"
+      class="mnav-btn flex flex-col items-center p-1 text-[10px] font-medium">
       <i class="fa-solid fa-boxes-packing text-base mb-0.5"></i>
       <span>Repuestos</span>
     </button>
@@ -153,21 +205,27 @@
   <!-- ================= MAIN CONTENT CONTAINER ================= -->
   <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
     <!-- Header -->
-    <header class="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+    <header
+      class="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
       <div class="flex items-center gap-3">
         <h2 id="page-title" class="text-lg sm:text-xl font-bold text-slate-800">Dashboard</h2>
-        <span id="header-date" class="hidden sm:inline-block text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium"></span>
-        <div id="drive-sync-indicator-header" onclick="retrySyncIfNeeded()" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border bg-emerald-50 border-emerald-200 text-emerald-700 cursor-default transition-all" title="Estado de sincronización con Google Drive">
+        <span id="header-date"
+          class="hidden sm:inline-block text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-medium"></span>
+        <div id="drive-sync-indicator-header" onclick="retrySyncIfNeeded()"
+          class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border bg-emerald-50 border-emerald-200 text-emerald-700 cursor-default transition-all"
+          title="Estado de sincronización con Google Drive">
           <span id="sync-dot-header" class="w-2 h-2 rounded-full bg-emerald-500"></span>
           <span id="sync-text-header">Sincronizado con Drive</span>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="openBusinessConfigModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all">
+        <button onclick="openBusinessConfigModal()"
+          class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-2 rounded-xl flex items-center gap-1.5 transition-all">
           <i class="fa-solid fa-store text-indigo-600"></i>
           <span id="header-business-btn-text" class="max-w-[120px] sm:max-w-none truncate">Mi Taller</span>
         </button>
-        <button onclick="switchTab('nueva_orden')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-1.5 transition-all">
+        <button onclick="switchTab('nueva_orden')"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold px-3 py-2 rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-1.5 transition-all">
           <i class="fa-solid fa-plus"></i>
           <span class="hidden sm:inline">Nueva Orden</span>
         </button>
@@ -194,7 +252,8 @@
           <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
             <div class="flex justify-between items-start">
               <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Listos p/ Retirar</span>
-              <span class="p-2 bg-emerald-50 text-emerald-600 rounded-xl text-sm"><i class="fa-solid fa-circle-check"></i></span>
+              <span class="p-2 bg-emerald-50 text-emerald-600 rounded-xl text-sm"><i
+                  class="fa-solid fa-circle-check"></i></span>
             </div>
             <div class="mt-3">
               <h3 id="kpi-listos" class="text-2xl sm:text-3xl font-extrabold text-emerald-600">0</h3>
@@ -205,7 +264,8 @@
           <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
             <div class="flex justify-between items-start">
               <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Cobrado Total</span>
-              <span class="p-2 bg-indigo-50 text-indigo-600 rounded-xl text-sm"><i class="fa-solid fa-sack-dollar"></i></span>
+              <span class="p-2 bg-indigo-50 text-indigo-600 rounded-xl text-sm"><i
+                  class="fa-solid fa-sack-dollar"></i></span>
             </div>
             <div class="mt-3">
               <h3 id="kpi-ingresos" class="text-2xl sm:text-3xl font-extrabold text-slate-900">$0</h3>
@@ -216,7 +276,8 @@
           <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
             <div class="flex justify-between items-start">
               <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Ganancia Neta</span>
-              <span class="p-2 bg-purple-50 text-purple-600 rounded-xl text-sm"><i class="fa-solid fa-chart-line"></i></span>
+              <span class="p-2 bg-purple-50 text-purple-600 rounded-xl text-sm"><i
+                  class="fa-solid fa-chart-line"></i></span>
             </div>
             <div class="mt-3">
               <h3 id="kpi-ganancia" class="text-2xl sm:text-3xl font-extrabold text-purple-600">$0</h3>
@@ -226,7 +287,8 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
+          <div
+            class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between">
               <h3 class="font-bold text-slate-800 flex items-center gap-2 text-sm">
                 <i class="fa-solid fa-clock text-indigo-600"></i> Últimas Órdenes Ingresadas
@@ -256,14 +318,18 @@
           <div class="space-y-4">
             <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-xl space-y-4">
               <div class="flex items-center justify-between">
-                <span class="bg-indigo-500/30 text-indigo-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-indigo-400/20 uppercase tracking-wider"><i class="fa-brands fa-google-drive mr-1 text-amber-400"></i> Google Drive</span>
+                <span
+                  class="bg-indigo-500/30 text-indigo-300 text-[10px] font-bold px-2.5 py-1 rounded-full border border-indigo-400/20 uppercase tracking-wider"><i
+                    class="fa-brands fa-google-drive mr-1 text-amber-400"></i> Google Drive</span>
                 <i class="fa-brands fa-google-drive text-amber-400"></i>
               </div>
               <div>
                 <h4 id="dash-business-title" class="text-lg font-bold">Mi Taller</h4>
-                <p class="text-slate-300 text-xs mt-1">Todas tus órdenes y repuestos se sincronizan de forma segura en tu Google Drive.</p>
+                <p class="text-slate-300 text-xs mt-1">Todas tus órdenes y repuestos se sincronizan de forma segura en
+                  tu Google Drive.</p>
               </div>
-              <button onclick="switchTab('nueva_orden')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-3 rounded-xl transition-all shadow-md">
+              <button onclick="switchTab('nueva_orden')"
+                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-3 rounded-xl transition-all shadow-md">
                 <i class="fa-solid fa-plus mr-1"></i> Ingresar Dispositivo
               </button>
             </div>
@@ -293,9 +359,11 @@
               <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <i class="fa-solid fa-mobile-screen text-indigo-600"></i> Recepción & Check-in de Dispositivo
               </h3>
-              <p class="text-xs text-slate-500 mt-0.5">Ingresa cliente, equipo, repuestos y el precio/seña se calcularán automáticamente.</p>
+              <p class="text-xs text-slate-500 mt-0.5">Ingresa cliente, equipo, repuestos y el precio/seña se calcularán
+                automáticamente.</p>
             </div>
-            <span id="preview-ot-code" class="bg-indigo-50 text-indigo-700 font-mono font-bold text-xs px-3 py-1.5 rounded-lg border border-indigo-200">
+            <span id="preview-ot-code"
+              class="bg-indigo-50 text-indigo-700 font-mono font-bold text-xs px-3 py-1.5 rounded-lg border border-indigo-200">
               OT-XXXX
             </span>
           </div>
@@ -303,54 +371,70 @@
           <form id="form-checkin" onsubmit="handleSaveOrder(event)" class="space-y-8">
             <!-- BLOQUE 1: DATOS DEL CLIENTE -->
             <div class="space-y-4">
-              <div class="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider border-b border-indigo-50 pb-2">
+              <div
+                class="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider border-b border-indigo-50 pb-2">
                 <i class="fa-solid fa-user-tag"></i> 1. Datos del Cliente
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">DNI / CUIT <span class="text-red-500">*</span></label>
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">DNI / CUIT <span
+                      class="text-red-500">*</span></label>
                   <div class="relative">
-                    <input type="text" id="cli_dni" required placeholder="Ej. 35123456" oninput="buscarClientePorDNI(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                    <span id="dni-match-badge" class="hidden absolute right-2 top-2.5 text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
+                    <input type="text" id="cli_dni" required placeholder="Ej. 35123456"
+                      oninput="buscarClientePorDNI(this.value)"
+                      class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <span id="dni-match-badge"
+                      class="hidden absolute right-2 top-2.5 text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
                       Encontrado
                     </span>
                   </div>
                 </div>
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre Completo <span class="text-red-500">*</span></label>
-                  <input type="text" id="cli_nombre" required placeholder="Juan Pérez" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre Completo <span
+                      class="text-red-500">*</span></label>
+                  <input type="text" id="cli_nombre" required placeholder="Juan Pérez"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Teléfono (WhatsApp) <span class="text-red-500">*</span></label>
-                  <input type="tel" id="cli_telefono" required placeholder="+5491112345678" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Teléfono (WhatsApp) <span
+                      class="text-red-500">*</span></label>
+                  <input type="tel" id="cli_telefono" required placeholder="+5491112345678"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
               </div>
 
               <div>
                 <label class="block text-xs font-semibold text-slate-700 mb-1">Email (Opcional)</label>
-                <input type="email" id="cli_email" placeholder="cliente@correo.com" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <input type="email" id="cli_email" placeholder="cliente@correo.com"
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
               </div>
             </div>
 
             <!-- BLOQUE 2: DISPOSITIVO Y BLOQUEO INTERACTIVO -->
             <div class="space-y-4">
-              <div class="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider border-b border-indigo-50 pb-2">
+              <div
+                class="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider border-b border-indigo-50 pb-2">
                 <i class="fa-solid fa-mobile-retro"></i> 2. Datos del Equipo & Seguridad
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Marca <span class="text-red-500">*</span></label>
-                  <input type="text" id="dev_marca" required placeholder="Samsung, Apple, Motorola..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Marca <span
+                      class="text-red-500">*</span></label>
+                  <input type="text" id="dev_marca" required placeholder="Samsung, Apple, Motorola..."
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Modelo <span class="text-red-500">*</span></label>
-                  <input type="text" id="dev_modelo" required placeholder="Galaxy S21, iPhone 12..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Modelo <span
+                      class="text-red-500">*</span></label>
+                  <input type="text" id="dev_modelo" required placeholder="Galaxy S21, iPhone 12..."
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-slate-700 mb-1">IMEI / Nº Serie</label>
-                  <input type="text" id="dev_imei" placeholder="3589400..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <input type="text" id="dev_imei" placeholder="3589400..."
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
               </div>
 
@@ -359,7 +443,8 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo de Bloqueo de Seguridad</label>
-                    <select id="dev_lock_type" onchange="handleLockTypeChange(this.value)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                    <select id="dev_lock_type" onchange="handleLockTypeChange(this.value)"
+                      class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
                       <option value="Sin Bloqueo">Sin Bloqueo</option>
                       <option value="PIN">PIN Numérico</option>
                       <option value="Contraseña">Contraseña Alfanumérica</option>
@@ -368,22 +453,27 @@
                   </div>
 
                   <div id="lock-input-text-container" class="hidden">
-                    <label id="lock-input-label" class="block text-xs font-semibold text-slate-700 mb-1">PIN o Clave</label>
-                    <input type="text" id="dev_lock_value" placeholder="Ej. 1234" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
+                    <label id="lock-input-label" class="block text-xs font-semibold text-slate-700 mb-1">PIN o
+                      Clave</label>
+                    <input type="text" id="dev_lock_value" placeholder="Ej. 1234"
+                      class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500">
                   </div>
                 </div>
 
                 <!-- CANVAS PATRÓN 3X3 INTERACTIVO -->
-                <div id="lock-pattern-container" class="hidden flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-slate-300 space-y-3">
+                <div id="lock-pattern-container"
+                  class="hidden flex flex-col items-center justify-center p-3 bg-white rounded-xl border border-slate-300 space-y-3">
                   <div class="text-center">
                     <span class="text-xs font-bold text-slate-700 block">Dibuja el Patrón de Desbloqueo</span>
                     <span class="text-[11px] text-slate-400">Arrastra para conectar los puntos 3x3</span>
                   </div>
 
-                  <canvas id="pattern-canvas" width="220" height="220" class="border border-slate-200 bg-slate-50 rounded-2xl shadow-inner cursor-pointer"></canvas>
+                  <canvas id="pattern-canvas" width="220" height="220"
+                    class="border border-slate-200 bg-slate-50 rounded-2xl shadow-inner cursor-pointer"></canvas>
 
                   <div class="flex gap-2">
-                    <button type="button" onclick="clearPatternCanvas()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg flex items-center gap-1">
+                    <button type="button" onclick="clearPatternCanvas()"
+                      class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg flex items-center gap-1">
                       <i class="fa-solid fa-rotate-left text-[10px]"></i> Limpiar Patrón
                     </button>
                   </div>
@@ -393,23 +483,32 @@
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs font-semibold text-slate-700 mb-1">Accesorios Incluidos</label>
-                  <input type="text" id="dev_accesorios" placeholder="Funda, Memoria, Tarjeta SIM, Caja" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <input type="text" id="dev_accesorios" placeholder="Funda, Memoria, Tarjeta SIM, Caja"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-slate-700 mb-1">Estado Estético Inicial</label>
-                  <input type="text" id="dev_estado_estetico" placeholder="Ej. Pantalla astillada esquina superior, tapa rayada." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <input type="text" id="dev_estado_estetico"
+                    placeholder="Ej. Pantalla astillada esquina superior, tapa rayada."
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-slate-700 mb-1">Falla Reportada por el Cliente <span class="text-red-500">*</span></label>
-                <textarea id="dev_falla" required rows="2" placeholder="Ej. El teléfono no enciende luego de una caída. No levanta carga." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Falla Reportada por el Cliente <span
+                    class="text-red-500">*</span></label>
+                <textarea id="dev_falla" required rows="2"
+                  placeholder="Ej. El teléfono no enciende luego de una caída. No levanta carga."
+                  class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
               </div>
 
               <!-- FOTOS DEL DISPOSITIVO / ACCESORIOS -->
               <div class="space-y-2">
-                <label class="block text-xs font-semibold text-slate-700">Fotos del Estado del Equipo / Accesorios</label>
-                <input type="file" id="dev_photos_input" multiple accept="image/*" onchange="handleDevicePhotosSelect(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                <label class="block text-xs font-semibold text-slate-700">Fotos del Estado del Equipo /
+                  Accesorios</label>
+                <input type="file" id="dev_photos_input" multiple accept="image/*"
+                  onchange="handleDevicePhotosSelect(event)"
+                  class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                 <div id="checkin-photos-preview" class="flex flex-wrap gap-2 pt-2"></div>
               </div>
             </div>
@@ -420,14 +519,17 @@
                 <div class="flex items-center gap-2 text-indigo-700 font-bold text-xs uppercase tracking-wider">
                   <i class="fa-solid fa-calculator"></i> 3. Repuestos & Cálculo Automático de Precio
                 </div>
-                <button type="button" onclick="addCheckinRepuestoRow()" class="px-3 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold text-xs rounded-lg flex items-center gap-1">
+                <button type="button" onclick="addCheckinRepuestoRow()"
+                  class="px-3 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-bold text-xs rounded-lg flex items-center gap-1">
                   <i class="fa-solid fa-plus text-[10px]"></i> Agregar Repuesto
                 </button>
               </div>
 
               <div class="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 space-y-3">
                 <p class="text-xs text-indigo-900 font-medium">
-                  <i class="fa-solid fa-circle-info mr-1"></i> Regla de cálculo: El <strong>Monto Total</strong> se calcula como <strong>Suma Repuestos × 2</strong>, y la <strong>Seña</strong> sugerida es la <strong>Mitad del Total</strong> (igual al costo de los repuestos).
+                  <i class="fa-solid fa-circle-info mr-1"></i> Regla de cálculo: El <strong>Monto Total</strong> se
+                  calcula como <strong>Suma Repuestos × 2</strong>, y la <strong>Seña</strong> sugerida es la
+                  <strong>Mitad del Total</strong> (igual al costo de los repuestos).
                 </p>
 
                 <div id="checkin-repuestos-container" class="space-y-2">
@@ -453,22 +555,27 @@
               <!-- GARANTÍA DÍAS PERSONALIZABLE -->
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div>
-                  <label class="block text-xs font-semibold text-slate-700 mb-1">Días de Garantía (Personalizable) <span class="text-red-500">*</span></label>
-                  <input type="number" id="garantia_dias_input" min="0" value="30" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <label class="block text-xs font-semibold text-slate-700 mb-1">Días de Garantía (Personalizable) <span
+                      class="text-red-500">*</span></label>
+                  <input type="number" id="garantia_dias_input" min="0" value="30" required
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2.5 text-sm font-semibold focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div>
                   <label class="block text-xs font-semibold text-slate-700 mb-1">Seña Recibida al Ingresar ($)</label>
-                  <input type="number" step="0.01" min="0" id="cost_sena_real" value="0" class="w-full bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold rounded-xl px-3 py-2.5 text-sm focus:outline-none">
+                  <input type="number" step="0.01" min="0" id="cost_sena_real" value="0"
+                    class="w-full bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold rounded-xl px-3 py-2.5 text-sm focus:outline-none">
                 </div>
               </div>
             </div>
 
             <!-- BOTONES ACCIÓN -->
             <div class="pt-4 flex justify-end gap-3 border-t border-slate-100">
-              <button type="button" onclick="switchTab('ordenes')" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 text-sm font-medium transition-all">
+              <button type="button" onclick="switchTab('ordenes')"
+                class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 text-sm font-medium transition-all">
                 Cancelar
               </button>
-              <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow-md shadow-indigo-600/20 text-sm flex items-center gap-2 transition-all">
+              <button type="submit"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow-md shadow-indigo-600/20 text-sm flex items-center gap-2 transition-all">
                 <i class="fa-solid fa-check"></i> Registrar Orden
               </button>
             </div>
@@ -478,14 +585,18 @@
 
       <!-- ================= TAB 3: ÓRDENES DE TRABAJO ================= -->
       <section id="tab-ordenes" class="tab-content hidden space-y-6">
-        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
+        <div
+          class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
           <div class="relative w-full sm:w-96">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
-            <input type="text" id="search-orders" placeholder="Buscar por OT, DNI, Cliente o Modelo..." oninput="renderOrdersTable()" class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <input type="text" id="search-orders" placeholder="Buscar por OT, DNI, Cliente o Modelo..."
+              oninput="renderOrdersTable()"
+              class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
           </div>
 
           <div class="flex items-center gap-3 w-full sm:w-auto">
-            <select id="filter-status" onchange="renderOrdersTable()" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500">
+            <select id="filter-status" onchange="renderOrdersTable()"
+              class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500">
               <option value="todos">Todos los Estados</option>
               <option value="Ingresado">Ingresado</option>
               <option value="En Diagnóstico">En Diagnóstico</option>
@@ -527,7 +638,9 @@
         <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex justify-between items-center">
           <div class="relative w-full sm:w-80">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
-            <input type="text" id="search-clients" placeholder="Buscar cliente por Nombre o DNI..." oninput="renderClientsTable()" class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
+            <input type="text" id="search-clients" placeholder="Buscar cliente por Nombre o DNI..."
+              oninput="renderClientsTable()"
+              class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500">
           </div>
         </div>
 
@@ -553,14 +666,16 @@
 
       <!-- ================= TAB 5: REPUESTOS Y COMPRAS MULTIPLES ================= -->
       <section id="tab-repuestos" class="tab-content hidden space-y-6">
-        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div
+          class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
               <i class="fa-solid fa-boxes-packing text-indigo-600"></i> Repuestos Comprados / A Comprar
             </h3>
             <p class="text-xs text-slate-500 mt-0.5">Gestión de repuestos asociados por cada orden de trabajo.</p>
           </div>
-          <button onclick="openAddRepuestoModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-1.5 transition-all">
+          <button onclick="openAddRepuestoModal()"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-1.5 transition-all">
             <i class="fa-solid fa-plus"></i> Agregar Repuesto a Orden
           </button>
         </div>
@@ -590,16 +705,19 @@
   </main>
 
   <!-- ================= MODAL: DETALLE Y GESTIÓN DE ORDEN ================= -->
-  <div id="modal-order-detail" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+  <div id="modal-order-detail"
+    class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
       <!-- Header -->
       <div class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
-          <span id="mod-ot-code" class="bg-indigo-600 text-white font-mono text-xs font-bold px-3 py-1 rounded-lg">OT-1000</span>
+          <span id="mod-ot-code"
+            class="bg-indigo-600 text-white font-mono text-xs font-bold px-3 py-1 rounded-lg">OT-1000</span>
           <h3 id="mod-ot-title" class="font-bold text-sm sm:text-base truncate max-w-md">Samsung S21 - Juan Pérez</h3>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="confirmDeleteCurrentOrder()" title="Eliminar Orden" class="text-red-400 hover:text-red-200 p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs">
+          <button onclick="confirmDeleteCurrentOrder()" title="Eliminar Orden"
+            class="text-red-400 hover:text-red-200 p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs">
             <i class="fa-solid fa-trash-can"></i>
           </button>
           <button onclick="closeModal('modal-order-detail')" class="text-slate-400 hover:text-white p-1.5 rounded-lg">
@@ -611,13 +729,15 @@
       <!-- Body Scrollable -->
       <div class="p-6 overflow-y-auto space-y-6 text-sm">
         <!-- Status Changer Bar -->
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div
+          class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <span class="text-xs text-slate-500 block">Estado Actual</span>
             <span id="mod-ot-status-badge" class="font-bold text-sm">Ingresado</span>
           </div>
           <div class="flex items-center gap-2 w-full sm:w-auto">
-            <select id="mod-ot-status-select" class="bg-white border border-slate-300 text-slate-800 text-xs font-semibold rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+            <select id="mod-ot-status-select"
+              class="bg-white border border-slate-300 text-slate-800 text-xs font-semibold rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
               <option value="Ingresado">Ingresado</option>
               <option value="En Diagnóstico">En Diagnóstico</option>
               <option value="Presupuestado">Presupuestado</option>
@@ -628,7 +748,9 @@
               <option value="Entregado">Entregado</option>
               <option value="Rechazado">Rechazado</option>
             </select>
-            <button onclick="updateOrderStatusFromModal()" class="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg font-semibold hover:bg-slate-700">Guardar Estado</button>
+            <button onclick="updateOrderStatusFromModal()"
+              class="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg font-semibold hover:bg-slate-700">Guardar
+              Estado</button>
           </div>
         </div>
 
@@ -669,13 +791,15 @@
         <div class="border border-slate-200 rounded-xl overflow-hidden">
           <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex justify-between items-center">
             <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wider">Repuestos Comprados / A Comprar</h4>
-            <button onclick="openAddRepuestoModalForCurrentOrder()" class="text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-md font-semibold hover:bg-indigo-700 flex items-center gap-1">
+            <button onclick="openAddRepuestoModalForCurrentOrder()"
+              class="text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-md font-semibold hover:bg-indigo-700 flex items-center gap-1">
               <i class="fa-solid fa-plus text-[10px]"></i> Agregar Repuesto
             </button>
           </div>
           <div class="p-4 space-y-3">
             <div id="mod-repuestos-list" class="divide-y divide-slate-100 text-xs"></div>
-            <div class="flex justify-between items-center pt-2 text-xs border-t border-slate-100 font-bold text-slate-800">
+            <div
+              class="flex justify-between items-center pt-2 text-xs border-t border-slate-100 font-bold text-slate-800">
               <span>Total Gasto en Repuestos:</span>
               <span id="mod-repuestos-total-cost" class="text-indigo-600 font-extrabold">$0</span>
             </div>
@@ -685,8 +809,10 @@
         <!-- DESGLOSE FINANCIERO Y PAGOS -->
         <div class="border border-slate-200 rounded-xl overflow-hidden">
           <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex justify-between items-center">
-            <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wider">Control Financiero & Pagos (2 Cuotas)</h4>
-            <button onclick="openNewPaymentModal()" class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-semibold hover:bg-emerald-700 flex items-center gap-1">
+            <h4 class="font-bold text-slate-700 text-xs uppercase tracking-wider">Control Financiero & Pagos (2 Cuotas)
+            </h4>
+            <button onclick="openNewPaymentModal()"
+              class="text-xs bg-emerald-600 text-white px-2.5 py-1 rounded-md font-semibold hover:bg-emerald-700 flex items-center gap-1">
               <i class="fa-solid fa-dollar-sign text-[10px]"></i> Registrar Pago
             </button>
           </div>
@@ -713,16 +839,20 @@
         <div class="space-y-2">
           <span class="text-xs font-semibold text-slate-600 block">Acciones de Envíos y Comprobantes:</span>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <button onclick="openWhatsAppRawModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
+            <button onclick="openWhatsAppRawModal()"
+              class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
               <i class="fa-brands fa-whatsapp text-sm"></i> Enviar WhatsApp (Datos Pelados)
             </button>
-            <button onclick="downloadPDF('ingreso')" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2 border border-indigo-200">
+            <button onclick="downloadPDF('ingreso')"
+              class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2 border border-indigo-200">
               <i class="fa-solid fa-file-pdf"></i> Ticket de Ingreso (PDF)
             </button>
-            <button onclick="downloadPDF('presupuesto')" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2 border border-indigo-200">
+            <button onclick="downloadPDF('presupuesto')"
+              class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2 border border-indigo-200">
               <i class="fa-solid fa-calculator"></i> Presupuesto (PDF)
             </button>
-            <button onclick="downloadPDF('garantia')" class="w-full bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2 border border-purple-200">
+            <button onclick="downloadPDF('garantia')"
+              class="w-full bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold p-2.5 rounded-xl text-xs flex items-center justify-center gap-2 border border-purple-200">
               <i class="fa-solid fa-shield-cat"></i> Entrega y Garantía (PDF)
             </button>
           </div>
@@ -732,7 +862,8 @@
   </div>
 
   <!-- ================= MODAL: CONFIGURACIÓN NEGOCIO ================= -->
-  <div id="modal-business-config" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="modal-business-config"
+    class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
       <div class="flex justify-between items-center border-b border-slate-100 pb-3">
         <h4 class="font-bold text-slate-800 flex items-center gap-2">
@@ -745,32 +876,41 @@
 
       <form onsubmit="handleSaveBusinessConfig(event)" class="space-y-4 text-sm">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre Comercial <span class="text-red-500">*</span></label>
-          <input type="text" id="cfg_shop_nombre" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre Comercial <span
+              class="text-red-500">*</span></label>
+          <input type="text" id="cfg_shop_nombre" required
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">CUIT / DNI Titular</label>
-          <input type="text" id="cfg_shop_cuit" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
+          <input type="text" id="cfg_shop_cuit"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Teléfono Taller</label>
-          <input type="text" id="cfg_shop_telefono" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
+          <input type="text" id="cfg_shop_telefono"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Dirección del Local</label>
-          <input type="text" id="cfg_shop_direccion" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
+          <input type="text" id="cfg_shop_direccion"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
         </div>
 
         <div class="pt-2 flex justify-end gap-2">
-          <button type="button" onclick="closeModal('modal-business-config')" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium">Cancelar</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md">Guardar Datos</button>
+          <button type="button" onclick="closeModal('modal-business-config')"
+            class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium">Cancelar</button>
+          <button type="submit"
+            class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md">Guardar
+            Datos</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- ================= MODAL: PREVIEW WHATSAPP DATOS PELADOS ================= -->
-  <div id="modal-wa-raw" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="modal-wa-raw"
+    class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl p-6 space-y-4">
       <div class="flex justify-between items-center border-b border-slate-100 pb-3">
         <h4 class="font-bold text-slate-800 flex items-center gap-2">
@@ -783,12 +923,15 @@
 
       <div class="space-y-2">
         <p class="text-xs text-slate-500">Este es el mensaje crudo listo para ser enviado:</p>
-        <pre id="wa-raw-preview-text" class="bg-slate-900 text-emerald-400 p-4 rounded-xl text-xs font-mono whitespace-pre-wrap leading-relaxed shadow-inner border border-slate-800"></pre>
+        <pre id="wa-raw-preview-text"
+          class="bg-slate-900 text-emerald-400 p-4 rounded-xl text-xs font-mono whitespace-pre-wrap leading-relaxed shadow-inner border border-slate-800"></pre>
       </div>
 
       <div class="pt-2 flex justify-end gap-2">
-        <button type="button" onclick="closeModal('modal-wa-raw')" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium">Cerrar</button>
-        <button type="button" onclick="sendWhatsAppRawNow()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md flex items-center gap-1.5">
+        <button type="button" onclick="closeModal('modal-wa-raw')"
+          class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium">Cerrar</button>
+        <button type="button" onclick="sendWhatsAppRawNow()"
+          class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md flex items-center gap-1.5">
           <i class="fa-brands fa-whatsapp text-sm"></i> Enviar por WhatsApp
         </button>
       </div>
@@ -796,7 +939,8 @@
   </div>
 
   <!-- ================= MODAL: REGISTRAR PAGO ================= -->
-  <div id="modal-new-payment" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="modal-new-payment"
+    class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
       <div class="flex justify-between items-center border-b border-slate-100 pb-3">
         <h4 class="font-bold text-slate-800 flex items-center gap-2">
@@ -816,8 +960,10 @@
           </select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Monto ($) <span class="text-red-500">*</span></label>
-          <input type="number" step="0.01" min="1" id="pay_monto" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold">
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Monto ($) <span
+              class="text-red-500">*</span></label>
+          <input type="number" step="0.01" min="1" id="pay_monto" required
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-bold">
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Método de Pago</label>
@@ -830,19 +976,24 @@
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Observaciones</label>
-          <input type="text" id="pay_obs" placeholder="Ej. Pago contra entrega" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
+          <input type="text" id="pay_obs" placeholder="Ej. Pago contra entrega"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
         </div>
 
         <div class="pt-2 flex justify-end gap-2">
-          <button type="button" onclick="closeModal('modal-new-payment')" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium">Cancelar</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md">Guardar Pago</button>
+          <button type="button" onclick="closeModal('modal-new-payment')"
+            class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium">Cancelar</button>
+          <button type="submit"
+            class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md">Guardar
+            Pago</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- ================= MODAL: REGISTRAR REPUESTO EN ORDEN EXISTENTE ================= -->
-  <div id="modal-add-repuesto" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="modal-add-repuesto"
+    class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
       <div class="flex justify-between items-center border-b border-slate-100 pb-3">
         <h4 class="font-bold text-slate-800 flex items-center gap-2">
@@ -855,21 +1006,28 @@
 
       <form onsubmit="handleSaveRepuesto(event)" class="space-y-4 text-sm">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Orden de Trabajo <span class="text-red-500">*</span></label>
-          <select id="rep_orden_id" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm"></select>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Orden de Trabajo <span
+              class="text-red-500">*</span></label>
+          <select id="rep_orden_id" required
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm"></select>
         </div>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Descripción del Repuesto <span class="text-red-500">*</span></label>
-          <input type="text" id="rep_descripcion" required placeholder="Ej. Módulo Display OLED Samsung S21" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Descripción del Repuesto <span
+              class="text-red-500">*</span></label>
+          <input type="text" id="rep_descripcion" required placeholder="Ej. Módulo Display OLED Samsung S21"
+            class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Costo ($) <span class="text-red-500">*</span></label>
-            <input type="number" step="0.01" min="0" id="rep_costo" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Costo ($) <span
+                class="text-red-500">*</span></label>
+            <input type="number" step="0.01" min="0" id="rep_costo" required
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Proveedor</label>
-            <input type="text" id="rep_proveedor" placeholder="Ej. FixParts" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
+            <input type="text" id="rep_proveedor" placeholder="Ej. FixParts"
+              class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm">
           </div>
         </div>
         <div>
@@ -881,21 +1039,27 @@
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Ticket / Comprobante (Imagen)</label>
-          <input type="file" id="rep_foto" accept="image/*" onchange="handleRepuestoTicketFile(event)" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+          <input type="file" id="rep_foto" accept="image/*" onchange="handleRepuestoTicketFile(event)"
+            class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
         </div>
 
         <div class="pt-2 flex justify-end gap-2">
-          <button type="button" onclick="closeModal('modal-add-repuesto')" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium">Cancelar</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md">Guardar Repuesto</button>
+          <button type="button" onclick="closeModal('modal-add-repuesto')"
+            class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-medium">Cancelar</button>
+          <button type="submit"
+            class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-md">Guardar
+            Repuesto</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- ================= MODAL: PREVIEW FOTO LIGHTBOX ================= -->
-  <div id="modal-img-preview" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+  <div id="modal-img-preview"
+    class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white max-w-xl w-full rounded-2xl overflow-hidden p-4 relative">
-      <button onclick="closeModal('modal-img-preview')" class="absolute right-4 top-4 bg-slate-900 text-white rounded-full p-1 hover:bg-slate-700 w-7 h-7 flex items-center justify-center text-xs">
+      <button onclick="closeModal('modal-img-preview')"
+        class="absolute right-4 top-4 bg-slate-900 text-white rounded-full p-1 hover:bg-slate-700 w-7 h-7 flex items-center justify-center text-xs">
         <i class="fa-solid fa-xmark"></i>
       </button>
       <h4 class="font-bold text-slate-800 text-xs mb-3">Imagen Adjunta</h4>
@@ -906,7 +1070,8 @@
   </div>
 
   <!-- ================= TOAST NOTIFICATION ================= -->
-  <div id="toast" class="fixed bottom-20 md:bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-800 text-sm">
+  <div id="toast"
+    class="fixed bottom-20 md:bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-800 text-sm">
     <div id="toast-icon"></div>
     <span id="toast-message" class="font-medium"></span>
   </div>
@@ -915,7 +1080,7 @@
   <script>
     // ================= GOOGLE API & AUTH CONFIGURATION =================
     // Reemplaza esta constante con tu Client ID generado en Google Cloud Console (Tipo: Aplicación Web)
-    const GOOGLE_CLIENT_ID = 'TU_CLIENT_ID_AQUI.apps.googleusercontent.com';
+    const GOOGLE_CLIENT_ID = '545163912144-59gh0qmvrnvk7riij80s022oh7dsbidi.apps.googleusercontent.com';
     const GOOGLE_SCOPES = 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email';
     const DB_FILE_NAME = 'taller_reparaciones_db.json';
 
@@ -934,7 +1099,7 @@
 
     // App State (100% Preserved)
     window.state = {
-      shop: { nombre: 'Mi Taller', cuit: '', telefono: '', direccion: '' },
+      shop: {nombre: 'Mi Taller', cuit: '', telefono: '', direccion: ''},
       clients: [],
       orders: [],
       currentTab: 'dashboard',
@@ -1008,7 +1173,7 @@
       }
 
       // Request Access Token
-      tokenClient.requestAccessToken({ prompt: '' });
+      tokenClient.requestAccessToken({prompt: ''});
     };
 
     async function handleTokenResponse(tokenResponse) {
@@ -1025,12 +1190,12 @@
       try {
         sessionStorage.setItem('taller_gdrive_token', window.accessToken);
         sessionStorage.setItem('taller_gdrive_expires', window.tokenExpiresAt.toString());
-      } catch (e) {}
+      } catch (e) { }
 
       // Fetch technician profile info (profile & email scopes)
       try {
         const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { 'Authorization': `Bearer ${window.accessToken}` }
+          headers: {'Authorization': `Bearer ${window.accessToken}`}
         });
         if (userRes.ok) {
           const profile = await userRes.json();
@@ -1040,11 +1205,11 @@
             picture: profile.picture || ''
           };
         } else {
-          window.currentUser = { name: 'Técnico', email: 'Conectado a Google Drive', picture: '' };
+          window.currentUser = {name: 'Técnico', email: 'Conectado a Google Drive', picture: ''};
         }
       } catch (e) {
         console.warn('No se pudo obtener información del perfil:', e);
-        window.currentUser = { name: 'Técnico', email: 'Conectado a Google Drive', picture: '' };
+        window.currentUser = {name: 'Técnico', email: 'Conectado a Google Drive', picture: ''};
       }
 
       // Update UI with technician data
@@ -1097,15 +1262,15 @@
       try {
         sessionStorage.removeItem('taller_gdrive_token');
         sessionStorage.removeItem('taller_gdrive_expires');
-      } catch (e) {}
+      } catch (e) { }
 
       document.getElementById('auth-screen').classList.remove('hidden');
       window.showToast('Sesión de Google cerrada.', 'info');
     };
 
     // Backward-compatible stubs in case anything triggers them
-    window.setAuthMode = () => {};
-    window.handleAuthSubmit = (e) => { if (e) e.preventDefault(); window.handleGoogleLogin(); };
+    window.setAuthMode = () => { };
+    window.handleAuthSubmit = (e) => {if (e) e.preventDefault(); window.handleGoogleLogin();};
 
     // ================= GOOGLE DRIVE DATABASE INTEGRATION =================
     // 1. Search, load or create taller_reparaciones_db.json
@@ -1115,7 +1280,7 @@
         const q = `name = '${DB_FILE_NAME}' and trashed = false`;
         const searchUrl = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name,trashed)&spaces=drive`;
         const searchRes = await fetch(searchUrl, {
-          headers: { 'Authorization': `Bearer ${window.accessToken}` }
+          headers: {'Authorization': `Bearer ${window.accessToken}`}
         });
 
         if (!searchRes.ok) {
@@ -1135,7 +1300,7 @@
 
           const downloadUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
           const downloadRes = await fetch(downloadUrl, {
-            headers: { 'Authorization': `Bearer ${window.accessToken}` }
+            headers: {'Authorization': `Bearer ${window.accessToken}`}
           });
 
           if (!downloadRes.ok) {
@@ -1143,7 +1308,7 @@
           }
 
           const dbData = await downloadRes.json();
-          window.state.shop = dbData.shop || { nombre: 'Mi Taller', cuit: '', telefono: '', direccion: '' };
+          window.state.shop = dbData.shop || {nombre: 'Mi Taller', cuit: '', telefono: '', direccion: ''};
           window.state.clients = Array.isArray(dbData.clients) ? dbData.clients : [];
           window.state.orders = Array.isArray(dbData.orders) ? dbData.orders : [];
 
@@ -1154,7 +1319,7 @@
         } else {
           // File does NOT exist -> create automatically with initial empty structure
           const initialDb = {
-            shop: { nombre: 'Mi Taller', cuit: '', telefono: '', direccion: '' },
+            shop: {nombre: 'Mi Taller', cuit: '', telefono: '', direccion: ''},
             clients: [],
             orders: []
           };
@@ -1169,19 +1334,27 @@
           };
 
           const multipartBody =
-            `--${boundary}
+            `--${boundary}
+
 ` +
-            `Content-Type: application/json; charset=UTF-8
-
+            `Content-Type: application/json; charset=UTF-8
+
+
+
 ` +
-            `${JSON.stringify(metadata)}
+            `${JSON.stringify(metadata)}
+
 ` +
-            `--${boundary}
+            `--${boundary}
+
 ` +
-            `Content-Type: application/json
-
+            `Content-Type: application/json
+
+
+
 ` +
-            `${JSON.stringify(initialDb, null, 2)}
+            `${JSON.stringify(initialDb, null, 2)}
+
 ` +
             `--${boundary}--`;
 
@@ -1257,7 +1430,7 @@
       isSavingToDrive = true;
       try {
         const dbPayload = {
-          shop: window.state.shop || { nombre: 'Mi Taller', cuit: '', telefono: '', direccion: '' },
+          shop: window.state.shop || {nombre: 'Mi Taller', cuit: '', telefono: '', direccion: ''},
           clients: window.state.clients || [],
           orders: window.state.orders || [],
           lastUpdated: new Date().toISOString()
@@ -1271,19 +1444,27 @@
         };
 
         const multipartBody =
-          `--${boundary}
+          `--${boundary}
+
 ` +
-          `Content-Type: application/json; charset=UTF-8
-
+          `Content-Type: application/json; charset=UTF-8
+
+
+
 ` +
-          `${JSON.stringify(metadata)}
+          `${JSON.stringify(metadata)}
+
 ` +
-          `--${boundary}
+          `--${boundary}
+
 ` +
-          `Content-Type: application/json
-
+          `Content-Type: application/json
+
+
+
 ` +
-          `${jsonString}
+          `${jsonString}
+
 ` +
           `--${boundary}--`;
 
@@ -1343,13 +1524,13 @@
               try {
                 sessionStorage.setItem('taller_gdrive_token', window.accessToken);
                 sessionStorage.setItem('taller_gdrive_expires', window.tokenExpiresAt.toString());
-              } catch (e) {}
+              } catch (e) { }
               resolve(true);
             } else {
               resolve(false);
             }
           };
-          tokenClient.requestAccessToken({ prompt: '' });
+          tokenClient.requestAccessToken({prompt: ''});
         } catch (e) {
           console.warn('Error en renovación silenciosa:', e);
           resolve(false);
@@ -1425,7 +1606,7 @@
           window.accessToken = savedToken;
           window.tokenExpiresAt = savedExpires;
           const userRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-            headers: { 'Authorization': `Bearer ${window.accessToken}` }
+            headers: {'Authorization': `Bearer ${window.accessToken}`}
           });
           if (userRes.ok) {
             const profile = await userRes.json();
@@ -1482,7 +1663,7 @@
 
     function updateHeaderDate() {
       const now = new Date();
-      const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+      const options = {weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'};
       document.getElementById('header-date').innerText = now.toLocaleDateString('es-AR', options);
     }
 
@@ -1564,7 +1745,7 @@
       }
 
       recent.forEach(ord => {
-        const client = window.state.clients.find(c => c.id === ord.clienteId) || { nombre: 'Desconocido' };
+        const client = window.state.clients.find(c => c.id === ord.clienteId) || {nombre: 'Desconocido'};
         const paid = (ord.pagos || []).reduce((acc, p) => acc + Number(p.monto), 0);
         const saldo = Number(ord.total) - paid;
 
@@ -1607,7 +1788,7 @@
     }
 
     window.addCheckinRepuestoRow = () => {
-      window.state.checkinRepuestosRows.push({ descripcion: '', costo: 0, estado: 'A comprar' });
+      window.state.checkinRepuestosRows.push({descripcion: '', costo: 0, estado: 'A comprar'});
       renderCheckinRepuestosRows();
     };
 
@@ -1661,9 +1842,9 @@
       const totalToCharge = sumCost * 2;
       const autoSena = totalToCharge / 2; // Equals sumCost
 
-      document.getElementById('calc-costo-repuestos').innerText = `$${sumCost.toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
-      document.getElementById('calc-monto-total').innerText = `$${totalToCharge.toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
-      document.getElementById('calc-sena-auto').innerText = `$${autoSena.toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+      document.getElementById('calc-costo-repuestos').innerText = `$${sumCost.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+      document.getElementById('calc-monto-total').innerText = `$${totalToCharge.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+      document.getElementById('calc-sena-auto').innerText = `$${autoSena.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
 
       document.getElementById('cost_sena_real').value = autoSena;
     }
@@ -1690,7 +1871,7 @@
       const files = Array.from(evt.target.files);
       files.forEach(file => {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
           window.state.tempCheckinPhotos.push(e.target.result);
           renderCheckinPhotosPreview();
         };
@@ -1728,10 +1909,10 @@
 
       // Client Save or Update
       let client = window.state.clients.find(c => c.dni === dni);
-      const clientData = { dni, nombre, telefono, email };
+      const clientData = {dni, nombre, telefono, email};
 
       if (!client) {
-        client = { id: 'cli_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), ...clientData };
+        client = {id: 'cli_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), ...clientData};
         window.state.clients.push(client);
       } else {
         Object.assign(client, clientData);
@@ -1844,8 +2025,8 @@
       canvas.addEventListener('mousemove', drawPatternMove);
       window.addEventListener('mouseup', endPatternDraw);
 
-      canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startPatternDraw(e.touches[0]); });
-      canvas.addEventListener('touchmove', (e) => { e.preventDefault(); drawPatternMove(e.touches[0]); });
+      canvas.addEventListener('touchstart', (e) => {e.preventDefault(); startPatternDraw(e.touches[0]);});
+      canvas.addEventListener('touchmove', (e) => {e.preventDefault(); drawPatternMove(e.touches[0]);});
       window.addEventListener('touchend', endPatternDraw);
     }
 
@@ -1978,7 +2159,7 @@
       }
 
       filtered.reverse().forEach(ord => {
-        const client = window.state.clients.find(c => c.id === ord.clienteId) || { nombre: 'Desconocido' };
+        const client = window.state.clients.find(c => c.id === ord.clienteId) || {nombre: 'Desconocido'};
         const paid = (ord.pagos || []).reduce((acc, p) => acc + Number(p.monto), 0);
         const saldo = Number(ord.total) - paid;
 
@@ -2037,7 +2218,7 @@
       const order = window.state.orders.find(o => o.id === orderId);
       if (!order) return;
 
-      const client = window.state.clients.find(c => c.id === order.clienteId) || { nombre: 'Desconocido', dni: '-', telefono: '-' };
+      const client = window.state.clients.find(c => c.id === order.clienteId) || {nombre: 'Desconocido', dni: '-', telefono: '-'};
       const paid = (order.pagos || []).reduce((acc, p) => acc + Number(p.monto), 0);
       const saldo = Number(order.total) - paid;
 
@@ -2198,12 +2379,12 @@
     window.openWhatsAppRawModal = () => {
       const order = window.state.orders.find(o => o.id === window.state.selectedOrderId);
       if (!order) return;
-      const client = window.state.clients.find(c => c.id === order.clienteId) || { nombre: 'Cliente', dni: '-' };
+      const client = window.state.clients.find(c => c.id === order.clienteId) || {nombre: 'Cliente', dni: '-'};
       const paid = (order.pagos || []).reduce((acc, p) => acc + Number(p.monto), 0);
       const saldo = Number(order.total) - paid;
 
       const rawText =
-`Orden: ${order.codigo}
+        `Orden: ${order.codigo}
 Cliente: ${client.nombre} (DNI: ${client.dni})
 Equipo: ${order.marca} ${order.modelo}
 Estado: ${order.estado}
@@ -2295,7 +2476,7 @@ Garantía: ${order.diasGarantia} días`;
       const file = evt.target.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         window.state.tempRepuestoTicket = e.target.result;
       };
       reader.readAsDataURL(file);
@@ -2366,7 +2547,7 @@ Garantía: ${order.diasGarantia} días`;
       let list = [];
       window.state.orders.forEach(o => {
         (o.repuestosGastos || []).forEach(r => {
-          list.push({ ...r, otCodigo: o.codigo });
+          list.push({...r, otCodigo: o.codigo});
         });
       });
 
@@ -2395,8 +2576,8 @@ Garantía: ${order.diasGarantia} días`;
     window.downloadPDF = (type) => {
       const order = window.state.orders.find(o => o.id === window.state.selectedOrderId);
       if (!order) return;
-      const client = window.state.clients.find(c => c.id === order.clienteId) || { nombre: 'Cliente', dni: '-', telefono: '-' };
-      const { jsPDF } = window.jspdf;
+      const client = window.state.clients.find(c => c.id === order.clienteId) || {nombre: 'Cliente', dni: '-', telefono: '-'};
+      const {jsPDF} = window.jspdf;
       const doc = new jsPDF();
       const shopName = (window.state.shop.nombre || 'Mi Taller').toUpperCase();
 
@@ -2419,9 +2600,9 @@ Garantía: ${order.diasGarantia} días`;
 
       doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
-      doc.text(titleText, 196, 18, { align: 'right' });
+      doc.text(titleText, 196, 18, {align: 'right'});
       doc.setFontSize(10);
-      doc.text(`CÓDIGO: ${order.codigo}`, 196, 26, { align: 'right' });
+      doc.text(`CÓDIGO: ${order.codigo}`, 196, 26, {align: 'right'});
 
       let y = 45;
 
@@ -2478,8 +2659,8 @@ Garantía: ${order.diasGarantia} días`;
         doc.line(25, y, 85, y);
         doc.line(125, y, 185, y);
         doc.setFontSize(8.5);
-        doc.text('Firma del Cliente', 55, y + 5, { align: 'center' });
-        doc.text(`Firma ${shopName}`, 155, y + 5, { align: 'center' });
+        doc.text('Firma del Cliente', 55, y + 5, {align: 'center'});
+        doc.text(`Firma ${shopName}`, 155, y + 5, {align: 'center'});
 
       } else {
         const rows = [
@@ -2494,7 +2675,7 @@ Garantía: ${order.diasGarantia} días`;
           head: [['Concepto / Trabajo', 'Monto']],
           body: rows,
           theme: 'striped',
-          headStyles: { fillColor: [79, 70, 229] }
+          headStyles: {fillColor: [79, 70, 229]}
         });
 
         y = doc.lastAutoTable.finalY + 10;
@@ -2502,11 +2683,11 @@ Garantía: ${order.diasGarantia} días`;
         const saldo = Number(order.total) - paid;
 
         doc.setFont('helvetica', 'bold');
-        doc.text(`TOTAL PRESUPUESTO: $${Number(order.total).toLocaleString('es-AR')}`, 196, y, { align: 'right' });
+        doc.text(`TOTAL PRESUPUESTO: $${Number(order.total).toLocaleString('es-AR')}`, 196, y, {align: 'right'});
         y += 6;
-        doc.text(`TOTAL PAGADO: $${paid.toLocaleString('es-AR')}`, 196, y, { align: 'right' });
+        doc.text(`TOTAL PAGADO: $${paid.toLocaleString('es-AR')}`, 196, y, {align: 'right'});
         y += 6;
-        doc.text(`SALDO PENDIENTE: $${saldo.toLocaleString('es-AR')}`, 196, y, { align: 'right' });
+        doc.text(`SALDO PENDIENTE: $${saldo.toLocaleString('es-AR')}`, 196, y, {align: 'right'});
 
         if (type === 'garantia') {
           y += 15;
@@ -2555,4 +2736,5 @@ Garantía: ${order.diasGarantia} días`;
     };
   </script>
 </body>
+
 </html>
